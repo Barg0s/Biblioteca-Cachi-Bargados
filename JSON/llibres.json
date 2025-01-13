@@ -1,17 +1,17 @@
 [
     {
-        "id": 1,
         "titol": "El Señor de los Anillos",
+        "id": 1,
         "autors": ["J.R.R. Tolkien"]
     },
     {
-        "id": 2,
         "titol": "Cien Años de Soledad",
+        "id": 2,
         "autors": ["Gabriel García Márquez"]
     },
     {
-        "id": 3,
         "titol": "El Hobbit",
+        "id": 3,
         "autors": ["J.R.R. Tolkien"]
-    }   
+    }
 ]

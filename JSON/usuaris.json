@@ -1,6 +1,13 @@
 [{
     "telefon": 658011562,
     "id": 1,
-    "nom": "David",
+    "nom": "caracol",
     "cognom": "Bargados"
-}]
+},
+{
+    "telefon": 640537414,
+    "id": 2,
+    "nom": "marc",
+    "cognom": "Cachinero"
+}
+]

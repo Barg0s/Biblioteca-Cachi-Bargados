@@ -1,8 +1,6 @@
 package com.biblioteca;
-
 import org.json.JSONObject;
 import org.json.JSONArray;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +9,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+
 public class Prestecs {
     public static final String filepathPrestecs = "JSON/prestecs.json";
     public static final String filepathUsers = "JSON/usuaris.json";

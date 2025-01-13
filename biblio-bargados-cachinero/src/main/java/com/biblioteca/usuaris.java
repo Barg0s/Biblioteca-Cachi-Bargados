@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class usuaris {
@@ -95,10 +96,14 @@ public class usuaris {
                 user.put(clau, nouTelefon);
             } else if (clau.equals("id")) {
                 System.out.println("No es pot modificar la ID.");
-            } else {
+            } else if (clau.equals("nom")||clau.equals("cognom")){
                 System.out.println("Escriu el nou valor:");
                 String nouValor = scanner.nextLine();
                 user.put(clau, nouValor);
+            }
+            
+            else {
+                System.out.println("No es pot modificar aquesta opcio.");
             }
 
             guardarJSON(jsonArray, filepath);
@@ -149,4 +154,36 @@ public class usuaris {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+
+
+    public static void LlistarUsuaris(){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject usuari = jsonArray.getJSONObject(i);
+
+                int id = usuari.getInt("id");
+                String nom = usuari.getString("nom");
+                String cognom = usuari.getString("cognom");
+                int telefon = usuari.getInt("telefon");
+
+                System.out.println("ID: " + id);
+                System.out.println("Nom: " + nom);
+                System.out.println("Cognom: " + cognom);
+                System.out.println("telefon: " + telefon);
+                System.out.println("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+           
+            
+        }
+
+
+
+
+
 }
