@@ -246,10 +246,7 @@ public class menus {
             }
         }
     }
-    //- Llistat de préstecs
-//- Llistat de préstecs d'un usuari
-//- Llistat de préstecs actius
-//- Llistat de préstecs fora de termini
+
     public static void menuLlistarPrestecs(Scanner scanner) {
         while (true) {
             System.out.println("Llistat de préstecs");
@@ -279,6 +276,44 @@ public class menus {
                 case "4":
                 case "Préstecs fora de termini":
                     System.out.println("Funció per cercar títol encara no implementada.");
+                    break;
+                case "0":
+                case "tornar":
+                    return;
+                default:
+                    System.out.println("Opció no vàlida. Torna a intentar-ho.");
+                    break;
+            }
+        }
+    }
+    public static void menuLlistarUsuaris(Scanner scanner) {
+        while (true) {
+            System.out.println("Llistar Usuaris");
+            System.out.println("1. Tots");
+            System.out.println("2. En préstec actiu");
+            System.out.println("3. Prestec fora de termini");
+            System.out.println("0. Tornar al menú de llibres");
+            System.out.print("Escull una opció: ");
+
+            String option = scanner.nextLine().toLowerCase();
+            clearScreen();
+
+            switch (option) {
+                case "1":
+                case "tots":
+                    System.out.println("Funció per llistar tots els usuaris ");
+                    usuaris.LlistarUsuaris();
+                    break;
+                case "2":
+                case "en préstec actiu":
+                    System.out.println("Funció per llistar usuaris amb préstec actiu.");
+                    //usuaris.LlistarUsuarisActiu();
+                    break;
+                case "3":
+                case "per prestec fora termini":
+                    System.out.println("Funció per llistar usuaris amb préstec fora de termini.");
+                    //usuaris.LlistarUsuarisForaTermini();
+
                     break;
                 case "0":
                 case "tornar":

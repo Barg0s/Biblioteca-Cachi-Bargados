@@ -149,4 +149,29 @@ public class usuaris {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    public static void LlistarUsuaris(){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject usuari = jsonArray.getJSONObject(i);
+
+                int id = usuari.getInt("id");
+                String nom = usuari.getString("nom");
+                String cognom = usuari.getString("cognom");
+                int telefon = usuari.getInt("telefon");
+
+                System.out.println("ID: " + id);
+                System.out.println("Nom: " + nom);
+                System.out.println("Cognom: " + cognom);
+                System.out.println("telefon: " + telefon);
+                System.out.println("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+           
+            
+        }
 }
