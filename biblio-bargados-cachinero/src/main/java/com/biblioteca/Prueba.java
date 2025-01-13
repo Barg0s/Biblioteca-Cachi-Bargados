@@ -5,6 +5,6 @@ import java.util.Scanner;
 public class Prueba {
 
     public static void main(String[] args) {
-        Llibres.LlistarPerTitol("El");
+        Llibres.LlistarPerAutor("Carlos Ruiz Zafon");
     }
 }

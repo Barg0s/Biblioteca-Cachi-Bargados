@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class Llibres {
 
     public static final String filepath = "JSON/llibres.json";
+    public static final String filepathPrestecs = "JSON/prestecs.json";
 
 public static void guardarJSON(JSONArray jsonArray,String filepath) {
     try {
@@ -224,8 +225,6 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
     }
     
 
-
-
     public static void LlistarPerAutor(String autorFiltrat) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
@@ -263,6 +262,52 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             e.printStackTrace();
         }
     }
-
-
-}
+    public static void LlistarLlibresPrestec(int id) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray jsonArray = new JSONArray(content);
+    
+            String prestecsContent = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(prestecsContent);
+    
+            boolean foundPrestec = false;
+    
+            for (int j = 0; j < prestecsArray.length(); j++) {
+                JSONObject prestec = prestecsArray.getJSONObject(j);
+                int idLlibrePrestec = prestec.getInt("idLlibre");
+    
+                if (idLlibrePrestec == id) {
+                    foundPrestec = true;
+    
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject llibre = jsonArray.getJSONObject(i);
+                        if (llibre.getInt("id") == id) {
+    
+                            String titol = llibre.getString("titol");
+    
+                            JSONArray autorsArray = llibre.getJSONArray("autors");
+                            ArrayList<String> autors = new ArrayList<>();
+                            for (int k = 0; k < autorsArray.length(); k++) {
+                                autors.add(autorsArray.getString(k));
+                            }
+                            String dataPrestec = prestec.getString("dataPrestec");
+                            String dataDevolucio = prestec.getString("dataDevolucio");
+                            System.out.println("ID: " + id);
+                            System.out.println("TÃ­tol: " + titol);
+                            System.out.println("Autors: " + String.join(", ", autors));
+                            System.out.println("Data de prestec: " + dataPrestec);
+                            System.out.println("Data de devolucio: " + dataDevolucio);
+                            break; 
+                        }
+                    }
+                }
+            }
+    
+            if (!foundPrestec) {
+                System.out.println("No s'han trobat préstecs per al llibre amb ID: " + id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}    
