@@ -1,7 +1,17 @@
 [
     {
-        "titol": "",
-        "id": null,
-        "autor": ""
-    }
+        "id": 1,
+        "titol": "El Señor de los Anillos",
+        "autors": ["J.R.R. Tolkien"]
+    },
+    {
+        "id": 2,
+        "titol": "Cien Años de Soledad",
+        "autors": ["Gabriel García Márquez"]
+    },
+    {
+        "id": 3,
+        "titol": "El Hobbit",
+        "autors": ["J.R.R. Tolkien"]
+    }   
 ]

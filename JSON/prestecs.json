@@ -1,8 +1,6 @@
-{
-    "id": null,
-    "idLlibre": null,
-    "idUsuari": null,
-    "telefon": null,
-    "dataPrestec": "",
-    "dataDevolucio": ""
-}
+[{
+    "dataDevolucio": "2025-02-12",
+    "dataPrestec": "2025-01-13",
+    "idLlibre": 3,
+    "idUsuari": 1
+}]
