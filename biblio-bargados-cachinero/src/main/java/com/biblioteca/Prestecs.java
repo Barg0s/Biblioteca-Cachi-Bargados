@@ -17,6 +17,16 @@ public class Prestecs {
     public static final String filepathLlibres = "JSON/llibres.json";
 
 
+    public static void comprobarData(String data, JSONArray llista) throws IllegalArgumentException {
+        for (int i = 0; i < llista.length(); i++) {
+            String[] dataSeparada = data.split("-");
+            if (dataSeparada[0].length() < 4 || dataSeparada[1].length() < 2 || dataSeparada[2].length() < 2 ){
+                throw new IllegalArgumentException("el format de la data no es correcte (YYYY-MM-DD)");
+            }
+            }
+        }
+    
+
     public static JSONObject buscarLlibrePerNom(JSONArray jsonArray, String titol) {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject llibre = jsonArray.getJSONObject(i);
@@ -32,6 +42,16 @@ public class Prestecs {
             JSONObject usuari = jsonArray.getJSONObject(i);
             if (usuari.getString("nom").equals(nom) && usuari.getString("cognom").equals(cognom)) {
                 return usuari;
+            }
+        }
+        return null;
+    }
+
+    public static JSONObject buscarPrestecPerID(JSONArray jsonArray, int id) {
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject prestec = jsonArray.getJSONObject(i);
+            if (prestec.getInt("id") == id) {
+                return prestec;
             }
         }
         return null;
@@ -69,7 +89,7 @@ public class Prestecs {
             int idUsuari = usuari.getInt("id");
     
             LocalDate dataPrestec = LocalDate.now();
-            LocalDate dataDevolucio = dataPrestec.plusDays(30);
+            LocalDate dataDevolucio = dataPrestec.plusDays(7);
     
             JSONObject prestec = new JSONObject();
             prestec.put("idLlibre", idLlibre);
@@ -82,6 +102,78 @@ public class Prestecs {
             guardarJSON(prestecsArray, filepathPrestecs);
             System.out.println("Préstec afegit correctament.");
         } catch (Exception e) {
+            System.out.println("Error al accedir al fitxer: " + e.getMessage());
+        }
+    }
+
+    public static void modificarPrestecs(int id, Scanner scanner) {
+        try {
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+    
+            JSONObject prestecFiltrar = buscarPrestecPerID(prestecsArray, id);
+            if (prestecFiltrar == null) {
+                System.out.println("Préstec no trobat.");
+                return;
+            }
+    
+            System.out.println("Escriu la clau que vols modificar (devolucio): ");
+            String clau = scanner.nextLine().trim();
+    
+            if (!clau.equals("devolucio")) {
+                throw new IllegalArgumentException("Només es pot modificar la data de devolució.");
+            }
+    
+            System.out.println("Introdueix el nou valor per a '" + clau + "': ");
+            String nouValor = scanner.nextLine().trim();
+            comprobarData(nouValor, prestecsArray);
+            prestecFiltrar.put("dataDevolucio", nouValor);
+    
+            guardarJSON(prestecsArray, filepathPrestecs);
+    
+            System.out.println("Préstec actualitzat correctament.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error de validació: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error al accedir als fitxers: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error inesperat: " + e.getMessage());
+        }
+    }
+    public static void eliminarPrestec(int id,Scanner scanner) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray jsonArray = new JSONArray(content);
+            
+            boolean existeix = false; 
+    
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject prestec = jsonArray.getJSONObject(i);
+                int prestecId = prestec.getInt("id");
+    
+                if (id == prestecId) {
+                    existeix = true; 
+                    System.out.print("Vols eliminar el prestec?: ");
+                    String validacio = scanner.nextLine().toLowerCase();
+    
+                    if (validacio.equals("si")) {
+                        System.out.println("prestec eliminat correctament");
+                        jsonArray.remove(i);
+                        guardarJSON(jsonArray, filepathPrestecs);
+                        return;
+                        } else if (validacio.equals("no")) {
+                            menus.clearScreen();
+                            
+                            menus.menuLlibres(scanner);                        
+                    }
+    
+                }
+            }
+    
+            if (!existeix) {
+                System.out.println("Aquesta ID no existeix");
+            }
+            } catch (Exception e) {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }

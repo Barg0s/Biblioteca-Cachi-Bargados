@@ -194,35 +194,35 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
-            boolean titolTrobat = false;
+            boolean titolTrobat = false; 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject llibre = jsonArray.getJSONObject(i);
     
                 int id = llibre.getInt("id");
                 String titol = llibre.getString("titol");
-                if (titolFiltar.equals(titol)){
+                if (titol.contains(titolFiltar)) {
                     titolTrobat = true;
+    
                     JSONArray autorsArray = llibre.getJSONArray("autors");
-                ArrayList<String> autors = new ArrayList<>();
-                for (int j = 0; j < autorsArray.length(); j++) {
-                    autors.add(autorsArray.getString(j));
-                }
-    
-                System.out.println("ID: " + id);
-                System.out.println("Títol: " + titol);
-                System.out.println("Autors: " + String.join(", ", autors));
-                break; 
+                    ArrayList<String> autors = new ArrayList<>();
+                    for (int j = 0; j < autorsArray.length(); j++) {
+                        autors.add(autorsArray.getString(j));
                     }
-                }
-            
     
+                    System.out.println("ID: " + id);
+                    System.out.println("Títol: " + titol);
+                    System.out.println("Autors: " + String.join(", ", autors));
+                }
+            }
+            
             if (!titolTrobat) {
-                System.out.println("El titol no existeix.");
+                System.out.println("El títol no existeix.");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
 
 
 

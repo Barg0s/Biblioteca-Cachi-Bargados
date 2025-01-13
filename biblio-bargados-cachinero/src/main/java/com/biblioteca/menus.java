@@ -246,4 +246,47 @@ public class menus {
             }
         }
     }
+    //- Llistat de préstecs
+//- Llistat de préstecs d'un usuari
+//- Llistat de préstecs actius
+//- Llistat de préstecs fora de termini
+    public static void menuLlistarPrestecs(Scanner scanner) {
+        while (true) {
+            System.out.println("Llistat de préstecs");
+            System.out.println("1. Tots");
+            System.out.println("2. Préstecs d'un usuari");
+            System.out.println("3. Préstecs actius");
+            System.out.println("4. Préstecs fora de termini");
+            System.out.println("0. Tornar al menú de llibres");
+            System.out.print("Escull una opció: ");
+
+            String option = scanner.nextLine().toLowerCase();
+            clearScreen();
+
+            switch (option) {
+                case "1":
+                case "tots":
+                    Llibres.LlistarLlibres();
+                    break;
+                case "2":
+                case "Préstecs d'un usuari":
+                    System.out.println("Funció per llistar llibres en préstec encara no implementada.");
+                    break;
+                case "3":
+                case "Préstecs actius":
+                    System.out.println("Funció per llistar llibres per autor encara no implementada.");
+                    break;
+                case "4":
+                case "Préstecs fora de termini":
+                    System.out.println("Funció per cercar títol encara no implementada.");
+                    break;
+                case "0":
+                case "tornar":
+                    return;
+                default:
+                    System.out.println("Opció no vàlida. Torna a intentar-ho.");
+                    break;
+            }
+        }
+    }
 }
