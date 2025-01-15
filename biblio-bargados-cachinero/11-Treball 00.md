@@ -12,7 +12,7 @@
 
 ## Enunciat
 
-Desenvolupeu una aplicació en Java per línia de comandes que permeti gestionar una biblioteca senzilla. 
+Desenvolupeu una aplicació en Java per línia de comandes que permeti gestionar una biblioteca senzilla.
 
 L'objectiu és implementar una gestió d'inventari de llibres, un arxiu d'usuaris i un sistema de préstecs de llibres, respectant les limitacions especificades.
 
@@ -103,7 +103,7 @@ i així per les altres opcions (usuaris, préstecs, etc.)
 
 ## Requeriments tècnics
 
-**Persistència de Dades**: Les dades dels llibres, usuaris i préstecs s'han de guardar en arxius *".json"* 
+**Persistència de Dades**: Les dades dels llibres, usuaris i préstecs s'han de guardar en arxius *".json"*
 
 * llibres.json
 * usuaris.json
@@ -114,7 +114,7 @@ Els arxius *".json"* han d'estar actualitzats a cada acció de l'usuari, és a d
 Al iniciar el programa s'han de llegir els arxius *".json"* per carregar les dades a memòria.
 
 **Formats**: Tingues en compte que:
-    
+
 * Les opcions del menú han de ser insensibles a majúscules/minúscules (per exemple, "llibres", "Llibres", "LLIBRES").
 * Els llistats han de mostrar les dades en format tabulat per facilitar la lectura, és a dir columnes amb les dades de cada taula.
 
@@ -126,7 +126,7 @@ Al iniciar el programa s'han de llegir els arxius *".json"* per carregar les dad
 * Que els identificadors siguin únics
 * Els camps com Id, Titol, Nom, Cognoms, i Telèfon no poden estar buits.
 * El camp Telèfon ha de ser numèric i tenir un format vàlid.
-    
+
 Quan es produeix una excepció s'ha d'informar a l'usuari de l'apicació i gestionar-la sense que falli l'aplicació, permetent continuar treballant normalment.
 
 ## Requeriments de codi
@@ -171,7 +171,7 @@ El projecte s'ha de fer segons els següents equips, teniu en compte que:
 
 - No val fer mig projecte i dir que l'altre company no ha fet res
 - No val fer tot el projecte i esperar que els companys l'acceptin
-- Cal que els tots companys treballeu en el projecte 
+- Cal que els tots companys treballeu en el projecte
 - Cal que els tots companys feu commits regularment
 - Cal que tots pogueu respondre a les preguntes de l'avaluació de qualsevol part del projecte
 
@@ -183,20 +183,19 @@ Feu servir **GitHub projects** per gestionar les tasques que va fent cada membre
 - Ordenar les tasques segons dependències entre tasques (quines s'han de fer primer)
 - Definir una data estimada de quan estarà feta cada tasca
 - No repartir quines tasques fa cada company, sinó anar resolent segons la llista anterior a mida que es van tancant tasques resoltes
-- Fer un seguiment de les tasques resoltes segons l'estimació inicial 
+- Fer un seguiment de les tasques resoltes segons l'estimació inicial
 
 <br/>
 <br/>
 
-| Equips | Alumne 0 | Alumne 1 | Alumne 2 |
-|-------|----------|----------|----------|
-| 0     | Prieto, Víctor | El Meftah, Sabrina |
-| 1     | Cardizales, Hector | Pozo, Asier | Santana, Valeria |
-| 2     | Asensio, Víctor | Martínez, Samantha | Clemente, Gracia |
-| 3     | Bermudez, Alex | Lopez, Javier | Fernandez, Denís |
-| 4     | Maestre, Dennis | Navarrete, Byron | Paz, Paula |
-| 5     | Marin, Biel | Hirsch, Daniel | Romero, Ruth
-| 6     | Carrillo, Christopher | Maqueda, Jordi | Bargados, David
-| 7     | Perez, Albert | Garcia, Steephen |
-| 8     | Martínez, Alex
-
+| Equips | Alumne 0              | Alumne 1            | Alumne 2          |
+| ------ | --------------------- | ------------------- | ----------------- |
+| 0      | Prieto, Víctor       | El Meftah, Sabrina  |                   |
+| 1      | Cardizales, Hector    | Pozo, Asier         | Santana, Valeria  |
+| 2      | Asensio, Víctor      | Martínez, Samantha | Clemente, Gracia  |
+| 3      | Bermudez, Alex        | Lopez, Javier       | Fernandez, Denís |
+| 4      | Maestre, Dennis       | Navarrete, Byron    | Paz, Paula        |
+| 5      | Marin, Biel           | Hirsch, Daniel      | Romero, Ruth      |
+| 6      | Carrillo, Christopher | Maqueda, Jordi      | Bargados, David   |
+| 7      | Perez, Albert         | Garcia, Steephen    |                   |
+| 8      | Martínez, Alex       |                     |                   |

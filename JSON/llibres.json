@@ -1,17 +1,27 @@
 [
     {
-        "titol": "El Señor de los Anillos",
         "id": 1,
-        "autors": ["J.R.R. Tolkien"]
+        "titol": "La sombra del viento",
+        "autors": ["Carlos Ruiz Zafon"]
     },
     {
-        "titol": "Cien Años de Soledad",
         "id": 2,
-        "autors": ["Gabriel García Márquez"]
+        "titol": "El codigo Da Vinci",
+        "autors": ["Dan Brown"]
     },
     {
-        "titol": "El Hobbit",
         "id": 3,
-        "autors": ["J.R.R. Tolkien"]
+        "titol": "El alquimista",
+        "autors": ["Paulo Coelho"]
+    },
+    {
+        "id": 4,
+        "titol": "El juego del angel",
+        "autors": ["Carlos Ruiz Zafon"]
+    },
+    {
+        "id": 5,
+        "titol": "La guerra de los mundos",
+        "autors": ["H.G. Wells", "Isaac Asimov", "Arthur C. Clarke"]
     }
 ]
