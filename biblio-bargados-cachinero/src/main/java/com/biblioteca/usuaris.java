@@ -239,6 +239,59 @@ public class usuaris {
     }
 }
 
+public static void LlistarUsuarisForaTermini() {
+    try {
+        // Leer archivos JSON
+        String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepath)));
+        JSONArray prestecsArray = new JSONArray(contentPrestecs);
+
+        String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
+        JSONArray usuarisArray = new JSONArray(contentUsuaris);
+
+        // Indexar usuarios por ID para búsquedas rápidas
+        Map<Integer, JSONObject> usuarisMap = new HashMap<>();
+        for (int j = 0; j < usuarisArray.length(); j++) {
+            JSONObject usuari = usuarisArray.getJSONObject(j);
+            usuarisMap.put(usuari.getInt("id"), usuari);
+        }
+
+        LocalDate today = LocalDate.now(); // Fecha actual
+
+        System.out.println("Usuaris amb préstecs fora de termini:");
+
+        for (int i = 0; i < prestecsArray.length(); i++) {
+            JSONObject prestec = prestecsArray.getJSONObject(i);
+
+            // Validar y parsear fechas del préstamo
+            if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
+                LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+
+                // Verificar si el préstamo está fuera de plazo
+                if (today.isAfter(dataDevolucio)) {
+                    int idUsuari = prestec.getInt("idUsuari");
+
+                    // Buscar el usuario en el mapa
+                    if (usuarisMap.containsKey(idUsuari)) {
+                        JSONObject usuari = usuarisMap.get(idUsuari);
+
+                        // Imprimir información del usuario
+                        System.out.println("ID: " + usuari.getInt("id"));
+                        System.out.println("Nom: " + usuari.getString("nom"));
+                        System.out.println("Cognom: " + usuari.getString("cognom"));
+                        System.out.println("Telefon: " + usuari.getInt("telefon"));
+                        System.out.println("");
+                    }
+                }
+            } else {
+                System.err.println("Préstec con formato incorrecto en el índice: " + i);
+            }
+        }
+    } catch (Exception e) {
+        System.err.println("Error al listar usuaris fora de termini: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
 
 
 
