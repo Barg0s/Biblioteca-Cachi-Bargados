@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Scanner;
 public class Prestecs {
     public static final String filepathPrestecs = "JSON/prestecs.json";
@@ -177,5 +174,142 @@ public class Prestecs {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    public static void llistarPrestec(){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject prestec = jsonArray.getJSONObject(i);
+
+                String datadev = prestec.getString("dataDevolucio");
+                String dataprest = prestec.getString("dataPrestec");
+                String idllibre = prestec.getString("idLlibre");
+                String idprestec = prestec.getString("id");
+                String idUsuari = prestec.getString("idUsuari");
+
+                
+                System.out.println("Data Devolucio: " + datadev);
+                System.out.println("Data Prestec: " + dataprest);
+                System.out.println("ID Prestec: " + idprestec);
+                System.out.println("ID Llibre: " + idllibre);
+                System.out.println("ID Usuari: " + idUsuari);
+                System.out.println("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
+    public static void llistarPrestecUsuari(int id, Scanner scanner){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject prestec = jsonArray.getJSONObject(i);
+                String datadev = prestec.getString("dataDevolucio");
+                String dataprest = prestec.getString("dataPrestec");
+                int idllibre = prestec.getInt("idLlibre");
+                int idprestec = prestec.getInt("id");
+                int idUsuari = prestec.getInt("idUsuari");
+                if (id == idUsuari){
+                    System.out.println("Data Devolucio: " + datadev);
+                    System.out.println("Data Prestec: " + dataprest);
+                    System.out.println("ID Prestec: " + idprestec);
+                    System.out.println("ID Llibre: " + idllibre);
+                    System.out.println("ID Usuari: " + idUsuari);
+                    System.out.println("");
+                }
+
+                
+                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void LlistarPrestecActius() {
+        try {
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            LocalDate today = LocalDate.now();
+    
+            boolean prestecsActius = false;
+    
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
+    
+                try {
+                    if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
+                        LocalDate dataPrestec = LocalDate.parse(prestec.getString("dataPrestec"));
+                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+    
+                        if ((today.isEqual(dataPrestec) || today.isAfter(dataPrestec)) && today.isBefore(dataDevolucio)) {
+                            prestecsActius = true;
+                            System.out.println("ID Préstec: " + prestec.getInt("id"));
+                            System.out.println("ID Usuari: " + prestec.getInt("idUsuari"));
+                            System.out.println("ID Llibre: " + prestec.getInt("idLlibre"));
+                            System.out.println("Data Préstec: " + prestec.getString("dataPrestec"));
+                            System.out.println("Data Devolució: " + prestec.getString("dataDevolucio"));
+                            System.out.println("");
+                        }
+                    } else {
+                        System.err.println("Préstec con formato incorrecto en el índice: " + i);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error procesando préstec en el índice " + i + ": " + e.getMessage());
+                }
+            }
+    
+            if (!prestecsActius) {
+                System.out.println("No hi ha préstecs actius.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar préstecs actius: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public static void LlistarPrestecForaTermini() {
+        try {
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            LocalDate today = LocalDate.now();
+    
+            boolean prestecsFora = false;
+    
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
+    
+                try {
+                    if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
+                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+    
+                        if (today.isAfter(dataDevolucio)) {
+                            prestecsFora = true;
+                            System.out.println("ID Préstec: " + prestec.getInt("id"));
+                            System.out.println("ID Usuari: " + prestec.getInt("idUsuari"));
+                            System.out.println("ID Llibre: " + prestec.getInt("idLlibre"));
+                            System.out.println("Data Préstec: " + prestec.getString("dataPrestec"));
+                            System.out.println("Data Devolució: " + prestec.getString("dataDevolucio"));
+                            System.out.println("");
+                        }
+                    } else {
+                        System.err.println("Préstec con formato incorrecto en el índice: " + i);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error procesando préstec en el índice " + i + ": " + e.getMessage());
+                }
+            }
+    
+            if (!prestecsFora) {
+                System.out.println("No hi ha préstecs fora de termini.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error al listar préstecs actius: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 }    
