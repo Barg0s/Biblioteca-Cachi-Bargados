@@ -2,15 +2,21 @@ package com.biblioteca;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class usuaris {
 
     public static final String filepath = "JSON/usuaris.json";
+    public static final String filepathPrestecs = "JSON/prestecs.json";
 
     public static void guardarJSON(JSONArray jsonArray, String filepath) {
         try (PrintWriter out = new PrintWriter(filepath)) {
@@ -174,4 +180,100 @@ public class usuaris {
            
             
         }
-}
+        public static void LlistarUsuarisActiu() {
+            try {
+                String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+                JSONArray prestecsArray = new JSONArray(contentPrestecs);
+        
+                String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
+                JSONArray usuarisArray = new JSONArray(contentUsuaris);
+        
+                Map<Integer, JSONObject> usuarisMap = new HashMap<>();
+                for (int j = 0; j < usuarisArray.length(); j++) {
+                    JSONObject usuari = usuarisArray.getJSONObject(j);
+                    usuarisMap.put(usuari.getInt("id"), usuari);
+                }
+        
+                LocalDate today = LocalDate.now(); 
+        
+                System.out.println("Usuaris amb préstec actiu:");
+        
+                for (int i = 0; i < prestecsArray.length(); i++) {
+                    JSONObject prestec = prestecsArray.getJSONObject(i);
+        
+                    if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
+                        LocalDate dataPrestec = LocalDate.parse(prestec.getString("dataPrestec"));
+                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+        
+                        if (!today.isAfter(dataPrestec) && !today.isBefore(dataDevolucio)) {
+                            int idUsuari = prestec.getInt("idUsuari");
+        
+                            if (usuarisMap.containsKey(idUsuari)) {
+                                JSONObject usuari = usuarisMap.get(idUsuari);
+        
+                                System.out.println("ID: " + usuari.getInt("id"));
+                                System.out.println("Nom: " + usuari.getString("nom"));
+                                System.out.println("Cognom: " + usuari.getString("cognom"));
+                                System.out.println("Telefon: " + usuari.getInt("telefon"));
+                                System.out.println("");
+                            }
+                        }else{
+                            System.out.println("No n'hi han usuaris amb prestecs actius");
+                        }
+                    } else {
+                        System.err.println("Préstec con formato incorrecto en el índice: " + i);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error al listar usuaris amb préstec actiu: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        public static void LlistarUsuarisForaTermini() {
+            try {
+                String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+                JSONArray prestecsArray = new JSONArray(contentPrestecs);
+        
+                String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
+                JSONArray usuarisArray = new JSONArray(contentUsuaris);
+        
+                Map<Integer, JSONObject> usuarisMap = new HashMap<>();
+                for (int j = 0; j < usuarisArray.length(); j++) {
+                    JSONObject usuari = usuarisArray.getJSONObject(j);
+                    usuarisMap.put(usuari.getInt("id"), usuari);
+                }
+        
+                LocalDate today = LocalDate.now();
+                System.out.println("Usuaris amb préstecs fora de termini:");
+        
+                for (int i = 0; i < prestecsArray.length(); i++) {
+                    JSONObject prestec = prestecsArray.getJSONObject(i);
+        
+                    try {
+                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+        
+                        if (today.isAfter(dataDevolucio)) {
+                            int idUsuari = prestec.getInt("idUsuari");
+                            if (usuarisMap.containsKey(idUsuari)) {
+                                JSONObject usuari = usuarisMap.get(idUsuari);
+                                System.out.println("ID: " + usuari.getInt("id"));
+                                System.out.println("Nom: " + usuari.getString("nom"));
+                                System.out.println("Cognom: " + usuari.getString("cognom"));
+                                System.out.println("Telefon: " + usuari.getInt("telefon"));
+                                System.out.println("");
+                            }
+                        }
+                        else{
+                            System.out.println("No n'hi han usuaris amb prestecs fora de termini");}
+                    } catch (Exception e) {
+                        System.err.println("Error en un préstec: " + e.getMessage());
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error al leer archivos: " + e.getMessage());
+            } catch (JSONException e) {
+                System.err.println("Error en el formato JSON: " + e.getMessage());
+            }
+        }
+        }   
