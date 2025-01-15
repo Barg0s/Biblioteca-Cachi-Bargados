@@ -177,5 +177,60 @@ public class Prestecs {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+
+
+    public static void llistarPrestec(){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject prestec = jsonArray.getJSONObject(i);
+
+                String datadev = prestec.getString("dataDevolucio");
+                String dataprest = prestec.getString("dataPrestec");
+                String idllibre = prestec.getString("idLlibre");
+                String idprestec = prestec.getString("id");
+                String idUsuari = prestec.getString("idUsuari");
+
+                
+                System.out.println("Data Devolucio: " + datadev);
+                System.out.println("Data Prestec: " + dataprest);
+                System.out.println("ID Prestec: " + idprestec);
+                System.out.println("ID Llibre: " + idllibre);
+                System.out.println("ID Usuari: " + idUsuari);
+                System.out.println("");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
+    public static void llistarPrestecUsuari(int id, Scanner scanner){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject prestec = jsonArray.getJSONObject(i);
+                String datadev = prestec.getString("dataDevolucio");
+                String dataprest = prestec.getString("dataPrestec");
+                int idllibre = prestec.getInt("idLlibre");
+                int idprestec = prestec.getInt("id");
+                int idUsuari = prestec.getInt("idUsuari");
+                if (id == idUsuari){
+                    System.out.println("Data Devolucio: " + datadev);
+                    System.out.println("Data Prestec: " + dataprest);
+                    System.out.println("ID Prestec: " + idprestec);
+                    System.out.println("ID Llibre: " + idllibre);
+                    System.out.println("ID Usuari: " + idUsuari);
+                    System.out.println("");
+                }
+
+                
+                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }    
