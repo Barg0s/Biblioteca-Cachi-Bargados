@@ -51,8 +51,15 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
             comprobarLlibre(titol, jsonArray);
-            int id = jsonArray.length() + 1;
+            
             JSONObject Llibre = new JSONObject();
+            int id = 1;
+            if (jsonArray.length() > 0) {
+                JSONObject ultimLLibre = jsonArray.getJSONObject(jsonArray.length() - 1);
+                int ultimaId = ultimLLibre.getInt("id");
+                id = ultimaId + 1; 
+            }
+    
             Llibre.put("id", id);
             Llibre.put("titol", titol);
 
@@ -72,7 +79,7 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
         }
     }
 
-    public static void modificarLlibres(int id, Scanner scanner) {
+    public static void modificarLlibres(int id, String clau, String nouValor) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
@@ -83,38 +90,44 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
                 return;
             }
     
-            System.out.println("Escriu la clau que vols modificar (nom/cognom/telefon): ");
-            String clau = scanner.nextLine();
-    
             if (clau.equals("autors")) {
                 JSONArray autors = llibre.getJSONArray("autors");
-                System.out.println("Escriu el nou autor:");
-                String nou_autor = scanner.nextLine();
     
-                boolean autorExisteix = false;
-                for (int j = 0; j < autors.length(); j++) {
-                    String autor = autors.getString(j);
-                    if (nou_autor.equals(autor)) {
-                        autorExisteix = true;
-                        break; 
+                String[] nousAutors = nouValor.split(",");
+    
+                boolean autorAfegit = false;
+                for (String nouAutor : nousAutors) {
+                    nouAutor = nouAutor.trim();
+                    boolean autorExisteix = false;
+    
+                    for (int j = 0; j < autors.length(); j++) {
+                        if (nouAutor.equalsIgnoreCase(autors.getString(j))) {
+                            autorExisteix = true;
+                            break;
+                        }
+                    }
+    
+                    if (!autorExisteix && !nouAutor.isEmpty()) {
+                        autors.put(nouAutor); 
+                        autorAfegit = true;
                     }
                 }
     
-                if (autorExisteix) {
-                    System.out.println("Aquest autor ja existeix");
-                } else {
-                    autors.put(nou_autor); 
+                if (autorAfegit) {
                     guardarJSON(jsonArray, filepath);
-                    System.out.println("Autor afegit correctament.");
+                    System.out.println("Autors afegits correctament.");
+                } else {
+                    System.out.println("Tots els autors ja existeixen o la entrada és buida.");
                 }
+    
             } else if (clau.equals("id")) {
                 System.out.println("No es pot modificar la ID.");
-            } else {
-                System.out.println("Escriu el nou valor:");
-                String nouValor = scanner.nextLine();
+            } else if (clau.equals("autors") || clau.equals("titol")) {
                 llibre.put(clau, nouValor);
                 guardarJSON(jsonArray, filepath);
                 System.out.println("Llibre modificat correctament.");
+            }else{
+                System.out.println("Aquesta clau no existeix");
             }
     
         } catch (IllegalArgumentException e) {
@@ -123,46 +136,44 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
-    
-    public static void eliminarLlibres(int id,Scanner scanner) {
+    public static void eliminarLlibres(int id) {
+        Scanner scanner = new Scanner(System.in);
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
             
-            boolean existeix = false; 
+            boolean existeix = false;
     
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject llibre = jsonArray.getJSONObject(i);
                 int id_llibre = llibre.getInt("id");
     
                 if (id == id_llibre) {
-                    existeix = true; 
-                    String nom = llibre.getString("nom");
-                    String cognom = llibre.getString("cognom");
-                    System.out.print("Vols eliminar a l'Llibre" + nom + cognom + "?: ");
-                    String validacio = scanner.nextLine().toLowerCase();
-    
-                    if (validacio.equals("si")) {
-                        System.out.println("Llibre eliminat correctament");
+                    existeix = true;
+                    String titol = llibre.getString("titol");
+                    System.out.println("Vols eliminar a l'Llibre " + titol + "?");
+                    String confirmacio = scanner.nextLine();  
+
+                    if (confirmacio.equalsIgnoreCase("si")) {
+                        System.out.println("Llibre eliminat correctament.");
                         jsonArray.remove(i);
                         guardarJSON(jsonArray, filepath);
                         return;
-                        } else if (validacio.equals("no")) {
-                            menus.clearScreen();
-                            
-                            menus.menuLlibres(scanner);                        
+                    } else if (confirmacio.equalsIgnoreCase("no")) {
+                        System.out.println("Acció cancel·lada.");
+                        return;
                     }
-    
                 }
             }
     
             if (!existeix) {
-                System.out.println("Aquesta ID no existeix");
+                System.out.println("Aquesta ID no existeix.");
             }
-            } catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    
     public static void LlistarLlibres() {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));

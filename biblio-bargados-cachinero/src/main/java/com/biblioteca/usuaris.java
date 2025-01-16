@@ -55,18 +55,25 @@ public class usuaris {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
-
+    
             comprobarTelefon(telefon, jsonArray);
-
-            int id = jsonArray.length() + 1;
+    
+            int id = 1;
+            if (jsonArray.length() > 0) {
+                JSONObject ultimoUsuari = jsonArray.getJSONObject(jsonArray.length() - 1);
+                int ultimaId = ultimoUsuari.getInt("id");
+                id = ultimaId + 1; 
+            }
+    
             JSONObject usuari = new JSONObject();
             usuari.put("id", id);
             usuari.put("nom", nom);
             usuari.put("cognom", cognom);
             usuari.put("telefon", telefon);
-
+    
             jsonArray.put(usuari);
             guardarJSON(jsonArray, filepath);
+    
             System.out.println("Usuari afegit correctament.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -74,39 +81,35 @@ public class usuaris {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    
 
-    public static void modificarUsuaris(int id, Scanner scanner) {
+    public static void modificarUsuaris(int id, String clau, String nouValor) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
-
+    
             JSONObject user = buscarUsuariPerId(jsonArray, id);
             if (user == null) {
                 System.out.println("Aquesta ID no existeix.");
                 return;
             }
-
-            System.out.println("Escriu la clau que vols modificar (nom/cognom/telefon): ");
-            String clau = scanner.nextLine();
-
+    
             if (clau.equals("telefon")) {
-                System.out.println("Escriu el nou valor:");
-                while (!scanner.hasNextInt()) {
-                    System.out.println("El valor ha de ser un número.");
-                    scanner.next();
+                try {
+                    int nouTelefon = Integer.parseInt(nouValor); 
+                    comprobarTelefon(nouTelefon, jsonArray); 
+                    user.put(clau, nouTelefon);
+                } catch (NumberFormatException e) {
+                    System.out.println("El valor del telèfon ha de ser un número.");
+                    return;
                 }
-                int nouTelefon = scanner.nextInt();
-                scanner.nextLine(); 
-                comprobarTelefon(nouTelefon, jsonArray);
-                user.put(clau, nouTelefon);
             } else if (clau.equals("id")) {
                 System.out.println("No es pot modificar la ID.");
+                return;
             } else {
-                System.out.println("Escriu el nou valor:");
-                String nouValor = scanner.nextLine();
                 user.put(clau, nouValor);
             }
-
+    
             guardarJSON(jsonArray, filepath);
             System.out.println("Usuari modificat correctament.");
         } catch (IllegalArgumentException e) {
@@ -115,46 +118,52 @@ public class usuaris {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    
 
-    public static void eliminarUsuaris(int id,Scanner scanner) {
+    public static void eliminarUsuaris(int id) {
+        Scanner scanner = new Scanner(System.in);
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
             
-            boolean existeix = false; 
+            boolean existeix = false;
     
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject user = jsonArray.getJSONObject(i);
                 int id_user = user.getInt("id");
     
                 if (id == id_user) {
-                    existeix = true; 
+                    existeix = true;
                     String nom = user.getString("nom");
                     String cognom = user.getString("cognom");
-                    System.out.print("Vols eliminar a l'usuari" + nom + cognom + "?: ");
-                    String validacio = scanner.nextLine().toLowerCase();
     
-                    if (validacio.equals("si")) {
-                        System.out.println("Usuari eliminat correctament");
-                        jsonArray.remove(i);
-                        guardarJSON(jsonArray, filepath);
+                    System.out.println("Vols eliminar a l'usuari " + nom + " " + cognom + "?");
+                    String confirmacio = scanner.nextLine();  
+                    if (confirmacio.equalsIgnoreCase("si")) {
+                        System.out.println("Usuari eliminat correctament.");
+                        jsonArray.remove(i); 
+                        guardarJSON(jsonArray, filepath); 
                         return;
-                        } else if (validacio.equals("no")) {
-                            menus.clearScreen();
-                            
-                            menus.menUsuaris(scanner);                        
+                    } else if (confirmacio.equalsIgnoreCase("no")) {
+                        System.out.println("Acció cancel·lada.");
+                        return;
+                    } else {
+                        System.out.println("Resposta no vàlida. Acció cancel·lada.");
+                        return;
                     }
-    
                 }
             }
     
+            // Si no es troba l'usuari amb l'ID indicat
             if (!existeix) {
-                System.out.println("Aquesta ID no existeix");
+                System.out.println("Aquesta ID no existeix.");
             }
-            } catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error al accedir al fitxer: " + e.getMessage());
         }
     }
+    
+    
     public static void LlistarUsuaris(){
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
