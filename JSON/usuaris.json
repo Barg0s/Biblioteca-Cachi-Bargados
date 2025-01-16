@@ -1,6 +1,14 @@
-[{
-    "telefon": 658011562,
-    "id": 1,
-    "nom": "David",
-    "cognom": "Bargados"
-}]
+[
+    {
+        "telefon": 658011562,
+        "id": 1,
+        "nom": "David",
+        "cognom": "Bargados"
+    },
+    {
+        "telefon": 634567890,
+        "id": 2,
+        "nom": "Marc",
+        "cognom": "Cachinero"
+    }
+]

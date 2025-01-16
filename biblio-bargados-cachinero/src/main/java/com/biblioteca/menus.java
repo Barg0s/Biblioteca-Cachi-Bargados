@@ -71,9 +71,17 @@ public class menus {
                 System.out.print("Escriu l'ID del llibre a modificar: ");
                 if (scanner.hasNextInt()) {
                     int id = scanner.nextInt();
-                    scanner.nextLine();
-                    Llibres.modificarLlibres(id, scanner);
-                } else {
+                    scanner.nextLine(); 
+                    System.out.print("Escriu la clau a modificar (autors/titol): ");
+                    String clau = scanner.nextLine();
+                    
+                    System.out.print("Escriu el nou valor per la clau: ");
+                    String valor = scanner.nextLine();
+                    
+                    Llibres.modificarLlibres(id, clau, valor);
+                }
+                
+                 else {
                     System.out.println("Entrada no vàlida. L'ID ha de ser numèric.");
                     scanner.nextLine();
                 }
@@ -92,6 +100,7 @@ public class menus {
                 default:
                     System.out.println("Opció no vàlida. Torna a intentar-ho.");
                     break;
+            
             }
         }
     }
@@ -105,66 +114,80 @@ public class menus {
             System.out.println("4. Llistar");
             System.out.println("0. Tornar al menú principal");
             System.out.print("Escull una opció: ");
-
+    
             String option = scanner.nextLine().toLowerCase();
             clearScreen();
-
+    
             switch (option) {
                 case "1":
                 case "afegir":
                     System.out.print("Escriu el nom del usuari: ");
                     String nom = scanner.nextLine();
-
+    
                     System.out.print("Escriu el cognom del usuari: ");
                     String cognom = scanner.nextLine();
-
+    
                     System.out.print("Escriu el numero de telefon: ");
                     if (scanner.hasNextInt()) {
                         int telefon = scanner.nextInt();
-                        scanner.nextLine();
+                        scanner.nextLine(); 
                         usuaris.afegirUsuaris(nom, cognom, telefon);
                     } else {
-                        System.out.println("Entrada no vàlida. El número de telèfon ha de ser numèric.");
                         scanner.nextLine(); 
+                        System.out.println("Valor de telèfon incorrecte.");
                     }
                     break;
+    
                 case "2":
                 case "modificar":
                     System.out.print("Escriu l'ID del usuari a modificar: ");
                     if (scanner.hasNextInt()) {
                         int id = scanner.nextInt();
-                        scanner.nextLine();
-                        usuaris.modificarUsuaris(id, scanner);
+                        scanner.nextLine(); 
+    
+                        System.out.print("Escriu la clau a modificar (nom, cognom, telefon): ");
+                        String clau = scanner.nextLine();
+    
+                        System.out.print("Escriu el nou valor: ");
+                        String nouValor = scanner.nextLine();
+    
+                        usuaris.modificarUsuaris(id, clau, nouValor);
                     } else {
-                        System.out.println("Entrada no vàlida. L'ID ha de ser numèric.");
                         scanner.nextLine();
+                        System.out.println("ID incorrecte.");
                     }
                     break;
+    
                 case "3":
                 case "eliminar":
                     System.out.print("Escriu l'ID del usuari a eliminar: ");
                     if (scanner.hasNextInt()) {
                         int idEliminar = scanner.nextInt();
-                        scanner.nextLine();
-                        usuaris.eliminarUsuaris(idEliminar, scanner);
+                        scanner.nextLine(); 
+                        usuaris.eliminarUsuaris(idEliminar);
                     } else {
-                        System.out.println("Entrada no vàlida. L'ID ha de ser numèric.");
-                        scanner.nextLine();
+                        scanner.nextLine(); 
+                        System.out.println("ID incorrecte.");
                     }
                     break;
+    
                 case "4":
                 case "llistar":
                     System.out.println("Funció per llistar usuaris encara no implementada.");
                     break;
+    
                 case "0":
                 case "tornar":
                     return;
+    
                 default:
                     System.out.println("Opció no vàlida. Torna a intentar-ho.");
                     break;
             }
         }
     }
+    
+    
 
     public static void menuPrestecs(Scanner scanner) {
         while (true) {
@@ -261,17 +284,14 @@ public class menus {
             switch (option) {
                 case "1":
                 case "tots":
-                    System.out.println("Funció per llistar tots els usuaris ");
                     usuaris.LlistarUsuaris();
                     break;
                 case "2":
                 case "en préstec actiu":
-                    System.out.println("Funció per llistar usuaris amb préstec actiu.");
                     usuaris.LlistarUsuarisActiu();
                     break;
                 case "3":
                 case "per prestec fora termini":
-                    System.out.println("Funció per llistar usuaris amb préstec fora de termini.");
                     usuaris.LlistarUsuarisForaTermini();
 
                     break;

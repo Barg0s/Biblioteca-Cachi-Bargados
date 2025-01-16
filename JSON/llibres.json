@@ -1,27 +1,10 @@
 [
     {
+        "titol": "El Codi Da Vinci",
         "id": 1,
-        "titol": "La sombra del viento",
-        "autors": ["Carlos Ruiz Zafon"]
-    },
-    {
-        "id": 2,
-        "titol": "El codigo Da Vinci",
-        "autors": ["Dan Brown"]
-    },
-    {
-        "id": 3,
-        "titol": "El alquimista",
-        "autors": ["Paulo Coelho"]
-    },
-    {
-        "id": 4,
-        "titol": "El juego del angel",
-        "autors": ["Carlos Ruiz Zafon"]
-    },
-    {
-        "id": 5,
-        "titol": "La guerra de los mundos",
-        "autors": ["H.G. Wells", "Isaac Asimov", "Arthur C. Clarke"]
+        "autors": [
+            "Dan Brown",
+            "Robert Langdon"
+        ]
     }
 ]
