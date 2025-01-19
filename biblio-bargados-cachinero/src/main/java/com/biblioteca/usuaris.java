@@ -13,12 +13,14 @@ import java.util.Scanner;
 
 public class usuaris {
 
-    public static final String filepath = "JSON/usuaris.json";
-    public static final String filepathPrestecs = "JSON/prestecs.json";
+    public static final String filepath = "JSON/usuaris.json"; 
+    public static final String filepathPrestecs = "JSON/prestecs.json"; 
 
-
-
-
+    /**
+     * Mostra la informació d'un usuari.
+     * 
+     * @param usuari JSONobject que representa un usuari.
+     */
     public static void mostrarInformacio(JSONObject usuari){
         System.out.println("··········Informació de l'usuari··········");
         System.out.println("ID: " + usuari.getInt("id"));
@@ -29,15 +31,28 @@ public class usuaris {
         System.out.println();
     }
 
+    /**
+     * Desa un JSONArray d'usuaris al fitxer.
+     * 
+     * @param jsonArray El JSONArray amb les dades dels usuaris.
+     * @param filepath La ruta del fitxer on es guarden les dades.
+     */
     public static void guardarJSON(JSONArray jsonArray, String filepath) {
         try (PrintWriter out = new PrintWriter(filepath)) {
-            out.write(jsonArray.toString(4)); 
+            out.write(jsonArray.toString(4));
             out.flush();
         } catch (Exception e) {
-            System.out.println("No s'ha pogut guardar el fitxer: " + e.getMessage());
+            System.out.println("No s'ha pogut desar el fitxer: " + e.getMessage());
         }
     }
 
+    /**
+     * Cerca un usuari per la seva ID dins d'un JSONArray d'usuaris.
+     * 
+     * @param jsonArray El JSONArray amb els usuaris.
+     * @param id L'ID de l'usuari que es vol cercar.
+     * @return L'objecte JSON de l'usuari si es troba, sinó, retorna null.
+     */
     public static JSONObject buscarUsuariPerId(JSONArray jsonArray, int id) {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject user = jsonArray.getJSONObject(i);
@@ -48,6 +63,14 @@ public class usuaris {
         return null;
     }
 
+    /**
+     * Comprova si un número de telèfon ja existeix a la llista d'usuaris,
+     * i si és vàlid (té 9 dígits).
+     * 
+     * @param num El número de telèfon a verificar.
+     * @param llista El JSONArray amb els usuaris existents.
+     * @throws IllegalArgumentException Si el telèfon ja existeix o no és vàlid.
+     */
     public static void comprobarTelefon(int num, JSONArray llista) throws IllegalArgumentException {
         for (int i = 0; i < llista.length(); i++) {
             JSONObject user = llista.getJSONObject(i);
@@ -62,6 +85,13 @@ public class usuaris {
         }
     }
 
+    /**
+     * Afegix un nou usuari a la llista d'usuaris al fitxer JSON.
+     * 
+     * @param nom El nom del nou usuari.
+     * @param cognom El cognom del nou usuari.
+     * @param telefon El número de telèfon del nou usuari.
+     */
     public static void afegirUsuaris(String nom, String cognom, int telefon) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
@@ -81,8 +111,7 @@ public class usuaris {
             usuari.put("nom", nom);
             usuari.put("cognom", cognom);
             usuari.put("telefon", telefon);
-            usuari.put("prestecsActius", 0);
-
+            usuari.put("prestecsActius", 0); 
     
             jsonArray.put(usuari);
             guardarJSON(jsonArray, filepath);
@@ -95,7 +124,13 @@ public class usuaris {
         }
     }
     
-
+    /**
+     * Modifica un atribut específic d'un usuari identificat per la seva ID.
+     * 
+     * @param id L'ID de l'usuari a modificar.
+     * @param clau La clau de l'atribut que es vol modificar.
+     * @param nouValor El nou valor per a la clau especificada.
+     */
     public static void modificarUsuaris(int id, String clau, String nouValor) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
@@ -129,7 +164,6 @@ public class usuaris {
                     break;
             }
 
-   
             guardarJSON(jsonArray, filepath);
             System.out.println("Usuari modificat correctament.");
         } catch (IllegalArgumentException e) {
@@ -139,7 +173,11 @@ public class usuaris {
         }
     }
     
-
+    /**
+     * Elimina un usuari identificat per la seva ID després de demanar confirmació.
+     * 
+     * @param id L'ID de l'usuari que es vol eliminar.
+     */
     public static void eliminarUsuaris(int id) {
         Scanner scanner = new Scanner(System.in);
         try {
@@ -182,126 +220,127 @@ public class usuaris {
         }
     }
     
-    
+    /**
+     * Llista tots els usuaris emmagatzemats al fitxer JSON.
+     */
     public static void LlistarUsuaris(){
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject usuari = jsonArray.getJSONObject(i);
-
-
                 mostrarInformacio(usuari);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-           
-            
-        }
-        public static void LlistarUsuarisActiu() {
-            try {
-                String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-                JSONArray prestecsArray = new JSONArray(contentPrestecs);
-        
-                String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
-                JSONArray usuarisArray = new JSONArray(contentUsuaris);
-        
-                LocalDate today = LocalDate.now();
-                boolean usuarisActiusTrobats = false;
-        
-                System.out.println("Usuaris amb préstec actiu:");
-        
-                for (int i = 0; i < prestecsArray.length(); i++) {
-                    JSONObject prestec = prestecsArray.getJSONObject(i);
-        
-                    if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
-                        LocalDate dataPrestec = LocalDate.parse(prestec.getString("dataPrestec"));
-                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
-        
-                        if (!today.isBefore(dataPrestec) && !today.isAfter(dataDevolucio)) {
-                            int idUsuari = prestec.getInt("idUsuari");
-        
-                            for (int j = 0; j < usuarisArray.length(); j++) {
-                                JSONObject usuari = usuarisArray.getJSONObject(j);
-                                if (usuari.getInt("id") == idUsuari) {
-                                    mostrarInformacio(usuari);
-                                    usuarisActiusTrobats = true;
-                                    break;
-                                }
+    /**
+     * Llista els usuaris que tenen préstecs actius.
+     */
+    public static void LlistarUsuarisActiu() {
+        try {
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+    
+            String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray usuarisArray = new JSONArray(contentUsuaris);
+    
+            LocalDate today = LocalDate.now();
+            boolean usuarisActiusTrobats = false;
+    
+            System.out.println("Usuaris amb préstec actiu:");
+    
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
+    
+                if (prestec.has("dataPrestec") && prestec.has("dataDevolucio")) {
+                    LocalDate dataPrestec = LocalDate.parse(prestec.getString("dataPrestec"));
+                    LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+    
+                    if (!today.isBefore(dataPrestec) && !today.isAfter(dataDevolucio)) {
+                        int idUsuari = prestec.getInt("idUsuari");
+    
+                        for (int j = 0; j < usuarisArray.length(); j++) {
+                            JSONObject usuari = usuarisArray.getJSONObject(j);
+                            if (usuari.getInt("id") == idUsuari) {
+                                mostrarInformacio(usuari);
+                                usuarisActiusTrobats = true;
+                                break;
                             }
                         }
-                    } else {
-                        System.err.println("Préstec con formato incorrecto en el índice: " + i);
                     }
+                } else {
+                    System.err.println("Préstec amb format incorrecte a l'índex: " + i);
                 }
-        
-                if (!usuarisActiusTrobats) {
-                    System.out.println("No n'hi han usuaris amb préstecs actius.");
-                }
-            } catch (IOException e) {
-                System.err.println("Error al leer los archivos: " + e.getMessage());
-                e.printStackTrace();
-            } catch (JSONException e) {
-                System.err.println("Error al procesar el JSON: " + e.getMessage());
-                e.printStackTrace();
-            } catch (Exception e) {
-                System.err.println("Error inesperado: " + e.getMessage());
-                e.printStackTrace();
             }
+    
+            if (!usuarisActiusTrobats) {
+                System.out.println("No n'hi ha usuaris amb préstecs actius.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al llegir els fitxers: " + e.getMessage());
+        } catch (JSONException e) {
+            System.err.println("Error al processar el JSON: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperat: " + e.getMessage());
         }
-        
-        public static void LlistarUsuarisForaTermini() {
-            try {
-                String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-                JSONArray prestecsArray = new JSONArray(contentPrestecs);
-        
-                String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
-                JSONArray usuarisArray = new JSONArray(contentUsuaris);
-        
-                LocalDate today = LocalDate.now();
-                System.out.println("Usuaris amb préstecs fora de termini:");
-        
-                boolean hasForaTermini = false;
-        
-                for (int i = 0; i < prestecsArray.length(); i++) {
-                    JSONObject prestec = prestecsArray.getJSONObject(i);
-        
-                    try {
-                        LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
-        
-                        if (today.isAfter(dataDevolucio)) {
-                            int idUsuari = prestec.getInt("idUsuari");
-                            boolean usuariTrobat = false;
-        
-                            for (int j = 0; j < usuarisArray.length(); j++) {
-                                JSONObject usuari = usuarisArray.getJSONObject(j);
-        
-                                if (usuari.getInt("id") == idUsuari) {
-                                    mostrarInformacio(usuari);
-                                    usuariTrobat = true;
-                                    hasForaTermini = true;
-                                    break;
-                                }
-                            }
-        
-                            if (!usuariTrobat) {
-                                System.err.println("Usuari amb ID " + idUsuari + " no trobat.");
+    }
+
+    /**
+     * Llista els usuaris que tenen préstecs fora de termini.
+     */
+    public static void LlistarUsuarisForaTermini() {
+        try {
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+    
+            String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray usuarisArray = new JSONArray(contentUsuaris);
+    
+            LocalDate today = LocalDate.now();
+            System.out.println("Usuaris amb préstecs fora de termini:");
+    
+            boolean hasForaTermini = false;
+    
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
+    
+                try {
+                    LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
+    
+                    if (today.isAfter(dataDevolucio)) {
+                        int idUsuari = prestec.getInt("idUsuari");
+                        boolean usuariTrobat = false;
+    
+                        for (int j = 0; j < usuarisArray.length(); j++) {
+                            JSONObject usuari = usuarisArray.getJSONObject(j);
+    
+                            if (usuari.getInt("id") == idUsuari) {
+                                mostrarInformacio(usuari);
+                                usuariTrobat = true;
+                                hasForaTermini = true;
+                                break;
                             }
                         }
-                    } catch (Exception e) {
-                        System.err.println("Error en un préstec: " + e.getMessage());
+    
+                        if (!usuariTrobat) {
+                            System.err.println("Usuari amb ID " + idUsuari + " no trobat.");
+                        }
                     }
+                } catch (Exception e) {
+                    System.err.println("Error en un préstec: " + e.getMessage());
                 }
-        
-                if (!hasForaTermini) {
-                    System.out.println("No n'hi han usuaris amb préstecs fora de termini.");
-                }
-            } catch (IOException e) {
-                System.err.println("Error al leer archivos: " + e.getMessage());
-            } catch (JSONException e) {
-                System.err.println("Error en el format JSON: " + e.getMessage());
             }
+    
+            if (!hasForaTermini) {
+                System.out.println("No n'hi ha usuaris amb préstecs fora de termini.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al llegir els fitxers: " + e.getMessage());
+        } catch (JSONException e) {
+            System.err.println("Error en el format JSON: " + e.getMessage());
         }
-    }        
+    }
+}
