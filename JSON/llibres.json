@@ -1,10 +1,35 @@
 [
     {
-        "titol": "El Codi Da Vinci",
+        "titol": "El corredor del laberinto",
         "id": 1,
+        "autors": ["James Dashner"]
+    },
+    {
+        "titol": "Eragon",
+        "id": 2,
+        "autors": ["Christopher Paolini"]
+    },
+    {
+        "titol": "El nombre del viento",
+        "id": 3,
+        "autors": ["Patrick Rothfuss"]
+    },
+    {
+        "titol": "Divergente",
+        "id": 4,
         "autors": [
-            "Dan Brown",
-            "Robert Langdon"
+            "Veronica Roth"
         ]
-    }
+    },
+    {
+        "titol": "La sombra del viento",
+        "id": 5,
+        "autors": ["Carlos Ruiz Zafón"]
+    },
+    {
+        "titol": "La cura mortal",
+        "id": 6,
+        "autors": ["James Dashner"]
+    },
+    
 ]

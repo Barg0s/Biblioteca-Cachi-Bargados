@@ -1,14 +1,23 @@
 [
     {
         "telefon": 658011562,
+        "prestecsActius": 2,
         "id": 1,
         "nom": "David",
         "cognom": "Bargados"
     },
     {
-        "telefon": 634567890,
+        "telefon": 640537414,
+        "prestecsActius": 0,
         "id": 2,
         "nom": "Marc",
         "cognom": "Cachinero"
+    },
+    {
+        "telefon": 123456789,
+        "prestecsActius": 1,
+        "id": 3,
+        "nom": "Albert",
+        "cognom": "Palacios"
     }
 ]

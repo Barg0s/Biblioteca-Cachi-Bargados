@@ -9,14 +9,25 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class usuaris {
 
     public static final String filepath = "JSON/usuaris.json";
     public static final String filepathPrestecs = "JSON/prestecs.json";
+
+
+
+
+    public static void mostrarInformacio(JSONObject usuari){
+        System.out.println("··········Informació de l'usuari··········");
+        System.out.println("ID: " + usuari.getInt("id"));
+        System.out.println("Nom: " + usuari.getString("nom"));
+        System.out.println("Cognom: " + usuari.getString("cognom"));
+        System.out.println("Telefon: " + usuari.getInt("telefon"));
+        System.out.println("··········································");  
+        System.out.println();
+    }
 
     public static void guardarJSON(JSONArray jsonArray, String filepath) {
         try (PrintWriter out = new PrintWriter(filepath)) {
@@ -70,6 +81,8 @@ public class usuaris {
             usuari.put("nom", nom);
             usuari.put("cognom", cognom);
             usuari.put("telefon", telefon);
+            usuari.put("prestecsActius", 0);
+
     
             jsonArray.put(usuari);
             guardarJSON(jsonArray, filepath);
@@ -93,23 +106,30 @@ public class usuaris {
                 System.out.println("Aquesta ID no existeix.");
                 return;
             }
-    
-            if (clau.equals("telefon")) {
-                try {
-                    int nouTelefon = Integer.parseInt(nouValor); 
-                    comprobarTelefon(nouTelefon, jsonArray); 
-                    user.put(clau, nouTelefon);
-                } catch (NumberFormatException e) {
-                    System.out.println("El valor del telèfon ha de ser un número.");
-                    return;
-                }
-            } else if (clau.equals("id")) {
-                System.out.println("No es pot modificar la ID.");
-                return;
-            } else {
-                user.put(clau, nouValor);
+            switch (clau) {
+                case "telefon":
+                        try {
+                            int nouTelefon = Integer.parseInt(nouValor); 
+                            comprobarTelefon(nouTelefon, jsonArray); 
+                            user.put(clau, nouTelefon);
+                        } catch (NumberFormatException e) {
+                            System.out.println("El valor del telèfon ha de ser un número.");
+                            return;
+                        } 
+                    break;
+                case "nom":
+                case "cognom":
+                    user.put(clau, nouValor);
+                    break;
+                case "id":
+                    System.out.println("no es pot modificar l'id");
+                    break;
+                default:
+                    System.out.println("Aquesta clau no existeix");
+                    break;
             }
-    
+
+   
             guardarJSON(jsonArray, filepath);
             System.out.println("Usuari modificat correctament.");
         } catch (IllegalArgumentException e) {
@@ -154,7 +174,6 @@ public class usuaris {
                 }
             }
     
-            // Si no es troba l'usuari amb l'ID indicat
             if (!existeix) {
                 System.out.println("Aquesta ID no existeix.");
             }
@@ -171,16 +190,8 @@ public class usuaris {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject usuari = jsonArray.getJSONObject(i);
 
-                int id = usuari.getInt("id");
-                String nom = usuari.getString("nom");
-                String cognom = usuari.getString("cognom");
-                int telefon = usuari.getInt("telefon");
 
-                System.out.println("ID: " + id);
-                System.out.println("Nom: " + nom);
-                System.out.println("Cognom: " + cognom);
-                System.out.println("telefon: " + telefon);
-                System.out.println("");
+                mostrarInformacio(usuari);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,13 +208,8 @@ public class usuaris {
                 String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
                 JSONArray usuarisArray = new JSONArray(contentUsuaris);
         
-                Map<Integer, JSONObject> usuarisMap = new HashMap<>();
-                for (int j = 0; j < usuarisArray.length(); j++) {
-                    JSONObject usuari = usuarisArray.getJSONObject(j);
-                    usuarisMap.put(usuari.getInt("id"), usuari);
-                }
-        
-                LocalDate today = LocalDate.now(); 
+                LocalDate today = LocalDate.now();
+                boolean usuarisActiusTrobats = false;
         
                 System.out.println("Usuaris amb préstec actiu:");
         
@@ -214,27 +220,34 @@ public class usuaris {
                         LocalDate dataPrestec = LocalDate.parse(prestec.getString("dataPrestec"));
                         LocalDate dataDevolucio = LocalDate.parse(prestec.getString("dataDevolucio"));
         
-                        if (!today.isAfter(dataPrestec) && !today.isBefore(dataDevolucio)) {
+                        if (!today.isBefore(dataPrestec) && !today.isAfter(dataDevolucio)) {
                             int idUsuari = prestec.getInt("idUsuari");
         
-                            if (usuarisMap.containsKey(idUsuari)) {
-                                JSONObject usuari = usuarisMap.get(idUsuari);
-        
-                                System.out.println("ID: " + usuari.getInt("id"));
-                                System.out.println("Nom: " + usuari.getString("nom"));
-                                System.out.println("Cognom: " + usuari.getString("cognom"));
-                                System.out.println("Telefon: " + usuari.getInt("telefon"));
-                                System.out.println("");
+                            for (int j = 0; j < usuarisArray.length(); j++) {
+                                JSONObject usuari = usuarisArray.getJSONObject(j);
+                                if (usuari.getInt("id") == idUsuari) {
+                                    mostrarInformacio(usuari);
+                                    usuarisActiusTrobats = true;
+                                    break;
+                                }
                             }
-                        }else{
-                            System.out.println("No n'hi han usuaris amb prestecs actius");
                         }
                     } else {
                         System.err.println("Préstec con formato incorrecto en el índice: " + i);
                     }
                 }
+        
+                if (!usuarisActiusTrobats) {
+                    System.out.println("No n'hi han usuaris amb préstecs actius.");
+                }
+            } catch (IOException e) {
+                System.err.println("Error al leer los archivos: " + e.getMessage());
+                e.printStackTrace();
+            } catch (JSONException e) {
+                System.err.println("Error al procesar el JSON: " + e.getMessage());
+                e.printStackTrace();
             } catch (Exception e) {
-                System.err.println("Error al listar usuaris amb préstec actiu: " + e.getMessage());
+                System.err.println("Error inesperado: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -247,14 +260,10 @@ public class usuaris {
                 String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
                 JSONArray usuarisArray = new JSONArray(contentUsuaris);
         
-                Map<Integer, JSONObject> usuarisMap = new HashMap<>();
-                for (int j = 0; j < usuarisArray.length(); j++) {
-                    JSONObject usuari = usuarisArray.getJSONObject(j);
-                    usuarisMap.put(usuari.getInt("id"), usuari);
-                }
-        
                 LocalDate today = LocalDate.now();
                 System.out.println("Usuaris amb préstecs fora de termini:");
+        
+                boolean hasForaTermini = false;
         
                 for (int i = 0; i < prestecsArray.length(); i++) {
                     JSONObject prestec = prestecsArray.getJSONObject(i);
@@ -264,25 +273,35 @@ public class usuaris {
         
                         if (today.isAfter(dataDevolucio)) {
                             int idUsuari = prestec.getInt("idUsuari");
-                            if (usuarisMap.containsKey(idUsuari)) {
-                                JSONObject usuari = usuarisMap.get(idUsuari);
-                                System.out.println("ID: " + usuari.getInt("id"));
-                                System.out.println("Nom: " + usuari.getString("nom"));
-                                System.out.println("Cognom: " + usuari.getString("cognom"));
-                                System.out.println("Telefon: " + usuari.getInt("telefon"));
-                                System.out.println("");
+                            boolean usuariTrobat = false;
+        
+                            for (int j = 0; j < usuarisArray.length(); j++) {
+                                JSONObject usuari = usuarisArray.getJSONObject(j);
+        
+                                if (usuari.getInt("id") == idUsuari) {
+                                    mostrarInformacio(usuari);
+                                    usuariTrobat = true;
+                                    hasForaTermini = true;
+                                    break;
+                                }
+                            }
+        
+                            if (!usuariTrobat) {
+                                System.err.println("Usuari amb ID " + idUsuari + " no trobat.");
                             }
                         }
-                        else{
-                            System.out.println("No n'hi han usuaris amb prestecs fora de termini");}
                     } catch (Exception e) {
                         System.err.println("Error en un préstec: " + e.getMessage());
                     }
                 }
+        
+                if (!hasForaTermini) {
+                    System.out.println("No n'hi han usuaris amb préstecs fora de termini.");
+                }
             } catch (IOException e) {
                 System.err.println("Error al leer archivos: " + e.getMessage());
             } catch (JSONException e) {
-                System.err.println("Error en el formato JSON: " + e.getMessage());
+                System.err.println("Error en el format JSON: " + e.getMessage());
             }
         }
-        }   
+    }        

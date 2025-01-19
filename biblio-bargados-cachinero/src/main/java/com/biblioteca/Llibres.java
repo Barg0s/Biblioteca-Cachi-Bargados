@@ -2,6 +2,7 @@ package com.biblioteca;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,10 +10,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Llibres {
 
     public static final String filepath = "JSON/llibres.json";
     public static final String filepathPrestecs = "JSON/prestecs.json";
+    public static final String filepathUsers = "JSON/usuaris.json";
+
 
 public static void guardarJSON(JSONArray jsonArray,String filepath) {
     try {
@@ -22,7 +26,22 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
         e.printStackTrace();
     }
 }
+    public static void mostrarInformacio(JSONObject llibre){
+        int id = llibre.getInt("id");
+        String titol = llibre.getString("titol");
 
+        JSONArray autorsArray = llibre.getJSONArray("autors");
+        ArrayList<String> autors = new ArrayList<>();
+        for (int j = 0; j < autorsArray.length(); j++) {
+            autors.add(autorsArray.getString(j));
+        }
+        System.out.println("·······Informació del llibre··············");
+        System.out.println("ID: " + id);
+        System.out.println("Títol: " + titol);
+        System.out.println("Autors: " + String.join(", ", autors));
+        System.out.println("··········································");
+        System.out.println("");
+    }
 
     public static JSONObject buscarLlibrePerId(JSONArray jsonArray, int id) {
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -47,6 +66,14 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
     }
 
     public static void afegirLlibres(String titol,String[] autors) {
+        if (titol == null || titol.trim().isEmpty()) {
+            System.out.println("Error: El títol no pot estar buit.");
+            return;
+        }
+        if (autors == null || autors.length == 0) {
+            System.out.println("Error: Cal indicar almenys un autor.");
+            return;
+        }
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
@@ -79,7 +106,64 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
         }
     }
 
+
+
+
+
+
+
+
+    private static void modificarTitol(JSONObject llibre, JSONArray llibres, String nouTitol) {
+        if (nouTitol.equals(llibre.getString("titol"))) {
+            System.out.println("El títol no pot ser el mateix.");
+            return;
+        }
+    
+        llibre.put("titol", nouTitol);
+        guardarJSON(llibres, filepath);
+        System.out.println("Títol modificat correctament.");
+    }
+    
+
+    private static void modificarAutors(JSONObject llibre, JSONArray llibres, String nouValor) {
+        JSONArray autors = llibre.getJSONArray("autors");
+    
+        String[] nousAutors = nouValor.split(",");
+
+        boolean autorAfegit = false;
+        for (String nouAutor : nousAutors) {
+            nouAutor = nouAutor.trim();
+            boolean autorExisteix = false;
+
+            for (int j = 0; j < autors.length(); j++) {
+                if (nouAutor.equalsIgnoreCase(autors.getString(j))) {
+                    autorExisteix = true;
+                    break;
+                }
+            }
+
+            if (!autorExisteix && !nouAutor.isEmpty()) {
+                autors.put(nouAutor); 
+                autorAfegit = true;
+            }
+        }
+
+        if (autorAfegit) {
+            guardarJSON(llibres, filepath);
+            System.out.println("Autors afegits correctament.");}else
+            {
+                System.out.println("L'autor ja existeix");
+            }
+    
+    }
+
+
+    
     public static void modificarLlibres(int id, String clau, String nouValor) {
+        if (nouValor == null || nouValor.trim().isEmpty()) {
+            System.out.println("El nou valor no pot estar buit.");
+            return;
+        }    
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
@@ -89,47 +173,20 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
                 System.out.println("Aquesta ID no existeix.");
                 return;
             }
-    
-            if (clau.equals("autors")) {
-                JSONArray autors = llibre.getJSONArray("autors");
-    
-                String[] nousAutors = nouValor.split(",");
-    
-                boolean autorAfegit = false;
-                for (String nouAutor : nousAutors) {
-                    nouAutor = nouAutor.trim();
-                    boolean autorExisteix = false;
-    
-                    for (int j = 0; j < autors.length(); j++) {
-                        if (nouAutor.equalsIgnoreCase(autors.getString(j))) {
-                            autorExisteix = true;
-                            break;
-                        }
-                    }
-    
-                    if (!autorExisteix && !nouAutor.isEmpty()) {
-                        autors.put(nouAutor); 
-                        autorAfegit = true;
-                    }
-                }
-    
-                if (autorAfegit) {
-                    guardarJSON(jsonArray, filepath);
-                    System.out.println("Autors afegits correctament.");
-                } else {
-                    System.out.println("Tots els autors ja existeixen o la entrada és buida.");
-                }
-    
-            } else if (clau.equals("id")) {
-                System.out.println("No es pot modificar la ID.");
-            } else if (clau.equals("autors") || clau.equals("titol")) {
-                llibre.put(clau, nouValor);
-                guardarJSON(jsonArray, filepath);
-                System.out.println("Llibre modificat correctament.");
-            }else{
-                System.out.println("Aquesta clau no existeix");
+            switch (clau) {
+                case "autors":
+                    modificarAutors(llibre, jsonArray, nouValor);    
+                    break;
+                case "titol":
+                    modificarTitol(llibre, jsonArray, nouValor);
+                    break;
+                case "id":
+                    System.out.println("no es pot modificar l'id");
+                    break;
+                default:
+                    System.out.println("Aquesta clau no existeix");
+                    break;
             }
-    
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {
@@ -151,7 +208,7 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
                 if (id == id_llibre) {
                     existeix = true;
                     String titol = llibre.getString("titol");
-                    System.out.println("Vols eliminar a l'Llibre " + titol + "?");
+                    System.out.println("Vols eliminar el Llibre " + titol + "?");
                     String confirmacio = scanner.nextLine();  
 
                     if (confirmacio.equalsIgnoreCase("si")) {
@@ -182,18 +239,7 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject llibre = jsonArray.getJSONObject(i);
     
-                int id = llibre.getInt("id");
-                String titol = llibre.getString("titol");
-    
-                JSONArray autorsArray = llibre.getJSONArray("autors");
-                ArrayList<String> autors = new ArrayList<>();
-                for (int j = 0; j < autorsArray.length(); j++) {
-                    autors.add(autorsArray.getString(j));
-                }
-    
-                System.out.println("ID: " + id);
-                System.out.println("Títol: " + titol);
-                System.out.println("Autors: " + String.join(", ", autors));
+                mostrarInformacio(llibre);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -210,21 +256,11 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject llibre = jsonArray.getJSONObject(i);
     
-                int id = llibre.getInt("id");
                 String titol = llibre.getString("titol");
                 if (titol.contains(titolFiltar)) {
                     titolTrobat = true;
     
-                    JSONArray autorsArray = llibre.getJSONArray("autors");
-                    ArrayList<String> autors = new ArrayList<>();
-                    for (int j = 0; j < autorsArray.length(); j++) {
-                        autors.add(autorsArray.getString(j));
-                    }
-    
-                    System.out.println("ID: " + id);
-                    System.out.println("Títol: " + titol);
-                    System.out.println("Autors: " + String.join(", ", autors));
-                }
+                    mostrarInformacio(llibre);}
             }
             
             if (!titolTrobat) {
@@ -250,17 +286,8 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
                     String autor = autors.getString(j);
                     if (autorFiltrat.equals(autor)) {
                         autorTrobat = true; 
-                        int id = llibre.getInt("id");
-                        String titol = llibre.getString("titol");
-    
-                        ArrayList<String> autorsnous = new ArrayList<>();
-                        for (int x = 0; x < autors.length(); x++) {
-                            autorsnous.add(autors.getString(x));
-                        }
-    
-                        System.out.println("ID: " + id);
-                        System.out.println("Títol: " + titol);
-                        System.out.println("Autors: " + String.join(", ", autorsnous));
+                        mostrarInformacio(llibre);    
+                    
                         break; 
                     }
                 }
@@ -273,52 +300,70 @@ public static void guardarJSON(JSONArray jsonArray,String filepath) {
             e.printStackTrace();
         }
     }
-    public static void LlistarLlibresPrestec(int id) {
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
-    
-            String prestecsContent = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(prestecsContent);
-    
-            boolean foundPrestec = false;
-    
-            for (int j = 0; j < prestecsArray.length(); j++) {
-                JSONObject prestec = prestecsArray.getJSONObject(j);
-                int idLlibrePrestec = prestec.getInt("idLlibre");
-    
-                if (idLlibrePrestec == id) {
-                    foundPrestec = true;
-    
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject llibre = jsonArray.getJSONObject(i);
-                        if (llibre.getInt("id") == id) {
-    
-                            String titol = llibre.getString("titol");
-    
-                            JSONArray autorsArray = llibre.getJSONArray("autors");
-                            ArrayList<String> autors = new ArrayList<>();
-                            for (int k = 0; k < autorsArray.length(); k++) {
-                                autors.add(autorsArray.getString(k));
-                            }
-                            String dataPrestec = prestec.getString("dataPrestec");
-                            String dataDevolucio = prestec.getString("dataDevolucio");
-                            System.out.println("ID: " + id);
-                            System.out.println("TÃ­tol: " + titol);
-                            System.out.println("Autors: " + String.join(", ", autors));
-                            System.out.println("Data de prestec: " + dataPrestec);
-                            System.out.println("Data de devolucio: " + dataDevolucio);
-                            break; 
-                        }
-                    }
+    public static void LlistarLlibresPrestec() {
+    try {
+        String content = new String(Files.readAllBytes(Paths.get(filepath)));
+        JSONArray llibresArray = new JSONArray(content);
+
+        String prestecsContent = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+        JSONArray prestecsArray = new JSONArray(prestecsContent);
+
+        String usuarisContent = new String(Files.readAllBytes(Paths.get(filepathUsers)));
+        JSONArray usuarisArray = new JSONArray(usuarisContent);
+
+        for (int p = 0; p < prestecsArray.length(); p++) {
+            JSONObject prestec = prestecsArray.getJSONObject(p);
+            int idLlibrePrestec = prestec.getInt("idLlibre");
+            int idUsuari = prestec.getInt("idUsuari");
+
+            JSONObject llibre = null;
+            for (int l = 0; l < llibresArray.length(); l++) {
+                JSONObject tempLlibre = llibresArray.getJSONObject(l);
+                if (tempLlibre.getInt("id") == idLlibrePrestec) {
+                    llibre = tempLlibre;
+                    break;
                 }
             }
-    
-            if (!foundPrestec) {
-                System.out.println("No s'han trobat préstecs per al llibre amb ID: " + id);
+
+            JSONObject usuari = null;
+            for (int u = 0; u < usuarisArray.length(); u++) {
+                JSONObject tempUsuari = usuarisArray.getJSONObject(u);
+                if (tempUsuari.getInt("id") == idUsuari) {
+                    usuari = tempUsuari;
+                    break;
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if (llibre != null && usuari != null) {
+                String titol = llibre.getString("titol");
+                JSONArray autorsArray = llibre.getJSONArray("autors");
+                ArrayList<String> autors = new ArrayList<>();
+                for (int a = 0; a < autorsArray.length(); a++) {
+                    autors.add(autorsArray.getString(a));
+                }
+
+                String nom = usuari.getString("nom");
+                String cognom = usuari.getString("cognom");
+
+                String dataPrestec = prestec.getString("dataPrestec");
+                String dataDevolucio = prestec.getString("dataDevolucio");
+
+                System.out.println("·······Informació del llibre prestat·······");
+                System.out.println("Propietari: " + nom + " " + cognom);
+                System.out.println("Títol: " + titol);
+                System.out.println("Autors: " + String.join(", ", autors));
+                System.out.println("Data de préstec: " + dataPrestec);
+                System.out.println("Data de devolució: " + dataDevolucio);
+                System.out.println("···································");
+            }
         }
+    } catch (IOException e) {
+        System.out.println("Error al llegir els arxius: " + e.getMessage());
+    } catch (JSONException e) {
+        System.out.println("Error al processar el JSON: " + e.getMessage());
+    } catch (Exception e) {
+        System.out.println("S'ha produït un error inesperat: " + e.getMessage());
     }
+}
+
 }    

@@ -1,7 +1,23 @@
-[{
-    "dataDevolucio": "2025-01-23",
-    "dataPrestec": "2025-01-16",
-    "idLlibre": 1,
-    "id": 1,
-    "idUsuari": 1
-}]
+[
+    {
+        "dataDevolucio": "2025-01-25",
+        "dataPrestec": "2025-01-18",
+        "idLlibre": 2,
+        "id": 1,
+        "idUsuari": 1
+    },
+    {
+        "dataDevolucio": "2025-01-25",
+        "dataPrestec": "2025-01-18",
+        "idLlibre": 1,
+        "id": 2,
+        "idUsuari": 1
+    },
+    {
+        "dataDevolucio": "2025-01-25",
+        "dataPrestec": "2025-01-18",
+        "idLlibre": 3,
+        "id": 3,
+        "idUsuari": 3
+    }
+]

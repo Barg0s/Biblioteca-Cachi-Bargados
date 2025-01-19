@@ -173,7 +173,7 @@ public class menus {
     
                 case "4":
                 case "llistar":
-                    System.out.println("Funció per llistar usuaris encara no implementada.");
+                    menuLlistarUsuaris(scanner);
                     break;
     
                 case "0":
@@ -205,19 +205,36 @@ public class menus {
             switch (option) {
                 case "1":
                 case "afegir":
-                    System.out.println("Funció per afegir préstecs encara no implementada.");
+                    System.out.println("Escriu el titol del llibre: ");
+                    String titol = scanner.nextLine();
+                    System.out.println("Escriu el nom i cognom de l'usuari: ");
+                    String user = scanner.nextLine();
+                    String[] user1 = user.split(" ");
+                    Prestecs.afegirPrestec(titol, user1[0],user1[1]);
                     break;
                 case "2":
                 case "modificar":
-                    System.out.println("Funció per modificar préstecs encara no implementada.");
+                System.out.print("Escriu l'ID del prestecs a modificar: ");
+                if (scanner.hasNextInt()) {
+                    int id = scanner.nextInt();
+                    scanner.nextLine(); 
+                    System.out.print("Escriu la clau a modificar: ");
+                    String clau = scanner.nextLine();
+                    
+                    System.out.print("Escriu el nou valor per la clau: ");
+                    String valor = scanner.nextLine();
+                    
+                    Prestecs.modificarPrestecs(id , clau, valor);}
                     break;
                 case "3":
                 case "eliminar":
-                    System.out.println("Funció per eliminar préstecs encara no implementada.");
+                    System.out.println("Escriu l'id del prestec a eliminar");
+                    int id = scanner.nextInt();
+                    Prestecs.eliminarPrestec(id);
                     break;
                 case "4":
                 case "llistar":
-                    
+                    menuLlistarPrestecs(scanner);
                     break;
                 case "0":
                 case "tornar":
@@ -249,16 +266,22 @@ public class menus {
                     break;
                 case "2":
                 case "en préstec":
-                    System.out.println("Funció per llistar llibres en préstec encara no implementada.");
+                    Llibres.LlistarLlibresPrestec();
                     break;
                 case "3":
                 case "per autor":
-                    System.out.println("Funció per llistar llibres per autor encara no implementada.");
+                    System.out.println("Escriu l'autor a filtrar: ");
+                    String autor = scanner.nextLine();
+
+                    Llibres.LlistarPerAutor(autor);
                     break;
                 case "4":
                 case "cercar títol":
-                    System.out.println("Funció per cercar títol encara no implementada.");
-                    break;
+                        System.out.println("Escriu el titol: ");
+                        String titol = scanner.nextLine();
+
+                        Llibres.LlistarPerTitol(titol);
+                        break;
                 case "0":
                 case "tornar":
                     return;
@@ -302,6 +325,48 @@ public class menus {
                     System.out.println("Opció no vàlida. Torna a intentar-ho.");
                     break;
             }
+        } 
+    }
+    public static void menuLlistarPrestecs(Scanner scanner) {
+        while (true) {
+            System.out.println("Llistar Prestecs");
+            System.out.println("1. Tots");
+            System.out.println("2. Prestecs d'un usuari");
+            System.out.println("3. Prestecs actius");
+            System.out.println("4. Prestec fora de termini");
+            System.out.println("0. Tornar al menú de prestecs");
+            System.out.print("Escull una opció: ");
+    
+            String option = scanner.nextLine().toLowerCase();
+            clearScreen();
+    
+            switch (option) {
+                case "1":
+                case "tots":
+                    Prestecs.llistarPrestec();
+                    break;
+                case "2":
+                case "prestecs d'un usuari":
+                    System.out.println("Escriu l'id del usuari");
+                    int id = scanner.nextInt();
+                    scanner.nextLine(); 
+                    Prestecs.llistarPrestecUsuari(id);
+                    break;
+                case "3":
+                case "en préstec actiu":
+                    Prestecs.LlistarPrestecActius();
+                    break;
+                case "4":
+                case "per prestec fora termini":
+                    Prestecs.LlistarPrestecForaTermini();
+                    break;
+                case "0":
+                case "tornar":
+                    return;
+                default:
+                    System.out.println("Opció no vàlida. Torna a intentar-ho.");
+                    break;
+            }
         }
     }
-}
+}    

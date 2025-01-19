@@ -15,7 +15,16 @@ public class Prestecs {
 
 
 
-
+    public static void mostrarInformacio(JSONObject prestec){
+        System.out.println("·············Informacio del prestec·············");
+        System.out.println("ID Préstec: " + prestec.getInt("id"));
+        System.out.println("ID Usuari: " + prestec.getInt("idUsuari"));
+        System.out.println("ID Llibre: " + prestec.getInt("idLlibre"));
+        System.out.println("Data Préstec: " + prestec.getString("dataPrestec"));
+        System.out.println("Data Devolució: " + prestec.getString("dataDevolucio"));
+        System.out.println("················································");
+        System.out.println();
+    }
 
     public static void comprobarData(String data, JSONArray llista) throws IllegalArgumentException {
         for (int i = 0; i < llista.length(); i++) {
@@ -88,22 +97,35 @@ public class Prestecs {
                 return;
             }
     
-            // Comprovar si el llibre ja està prestat
             int idLlibre = llibre.getInt("id");
             for (int i = 0; i < prestecsArray.length(); i++) {
                 JSONObject prestec = prestecsArray.getJSONObject(i);
                 int idPrestecLlibre = prestec.getInt("idLlibre");
-                String dataDevolucio = prestec.getString("dataDevolucio");
     
-                // Si el llibre ja està prestat i no s'ha retornat
-                if (idLlibre == idPrestecLlibre && LocalDate.now().isBefore(LocalDate.parse(dataDevolucio))) {
+                if (idLlibre == idPrestecLlibre) {
                     System.out.println("El llibre ja està prestat.");
                     return;
                 }
             }
     
-            // Si no s'ha trobat cap préstec actiu per aquest llibre
             int idUsuari = usuari.getInt("id");
+            int countPrestecs = 0;
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
+                if (prestec.getInt("idUsuari") == idUsuari) {
+                    countPrestecs++;
+                }
+            }
+    
+            if (countPrestecs >= 4) {
+                System.out.println("L'usuari ja té 4 llibres prestats. No pot llogar més.");
+                return;
+            }
+    
+            usuari.put("prestecsActius", countPrestecs + 1); 
+    
+            guardarJSON(usuarisArray, filepathUsers);
+    
             int id = 1;
             if (prestecsArray.length() > 0) {
                 JSONObject ultimPrestec = prestecsArray.getJSONObject(prestecsArray.length() - 1);
@@ -130,6 +152,7 @@ public class Prestecs {
         }
     }
     
+    
 
     public static void modificarPrestecs(int id, String clau, String nouValor) {
         try {
@@ -146,7 +169,6 @@ public class Prestecs {
                 throw new IllegalArgumentException("Només es pot modificar la data de devolució.");
             }
     
-            // Validar la nova data
             comprobarData(nouValor, prestecsArray);
             prestecFiltrar.put("dataDevolucio", nouValor);
     
@@ -164,25 +186,42 @@ public class Prestecs {
     
     public static void eliminarPrestec(int id) {
         Scanner scanner = new Scanner(System.in);
-
+    
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray jsonArray = new JSONArray(content);
+            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
+            JSONArray prestecsArray = new JSONArray(contentPrestecs);
             
             boolean existeix = false;
     
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject prestec = jsonArray.getJSONObject(i);
+            for (int i = 0; i < prestecsArray.length(); i++) {
+                JSONObject prestec = prestecsArray.getJSONObject(i);
                 int prestecId = prestec.getInt("id");
     
                 if (id == prestecId) {
                     existeix = true; 
+                    int idUsuari = prestec.getInt("idUsuari");
+    
                     System.out.println("Vols eliminar el préstec?");
                     String confirmacio = scanner.nextLine();
                     if (confirmacio.equalsIgnoreCase("si")) {
                         System.out.println("Préstec eliminat correctament.");
-                        jsonArray.remove(i);
-                        guardarJSON(jsonArray, filepathPrestecs);
+                        prestecsArray.remove(i);
+                        guardarJSON(prestecsArray, filepathPrestecs);
+    
+                        String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepathUsers)));
+                        JSONArray usuarisArray = new JSONArray(contentUsuaris);
+                        
+                        for (int j = 0; j < usuarisArray.length(); j++) {
+                            JSONObject usuari = usuarisArray.getJSONObject(j);
+                            int idUsuariEnArchivo = usuari.getInt("id");
+                            if (idUsuari == idUsuariEnArchivo) {
+                                int prestecsActius = usuari.getInt("prestecsActius");
+                                usuari.put("prestecsActius", prestecsActius - 1);
+                                guardarJSON(usuarisArray, filepathUsers);
+                                break;
+                            }
+                        }
+    
                         return;
                     } else if (confirmacio.equalsIgnoreCase("no")) {
                         System.out.println("Acció cancel·lada.");
@@ -199,6 +238,7 @@ public class Prestecs {
         }
     }
     
+    
     public static void llistarPrestec(){
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
@@ -206,19 +246,7 @@ public class Prestecs {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject prestec = jsonArray.getJSONObject(i);
 
-                String datadev = prestec.getString("dataDevolucio");
-                String dataprest = prestec.getString("dataPrestec");
-                int idllibre = prestec.getInt("idLlibre");
-                int idprestec = prestec.getInt("id");
-                int idUsuari = prestec.getInt("idUsuari");
-
-                
-                System.out.println("Data Devolucio: " + datadev);
-                System.out.println("Data Prestec: " + dataprest);
-                System.out.println("ID Prestec: " + idprestec);
-                System.out.println("ID Llibre: " + idllibre);
-                System.out.println("ID Usuari: " + idUsuari);
-                System.out.println("");
+                mostrarInformacio(prestec);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,18 +259,12 @@ public class Prestecs {
             JSONArray jsonArray = new JSONArray(content);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject prestec = jsonArray.getJSONObject(i);
-                String datadev = prestec.getString("dataDevolucio");
-                String dataprest = prestec.getString("dataPrestec");
-                int idllibre = prestec.getInt("idLlibre");
-                int idprestec = prestec.getInt("id");
+
+                
                 int idUsuari = prestec.getInt("idUsuari");
                 if (id == idUsuari){
-                    System.out.println("Data Devolucio: " + datadev);
-                    System.out.println("Data Prestec: " + dataprest);
-                    System.out.println("ID Prestec: " + idprestec);
-                    System.out.println("ID Llibre: " + idllibre);
-                    System.out.println("ID Usuari: " + idUsuari);
-                    System.out.println("");
+                    mostrarInformacio(prestec);
+
                 }
 
                 
@@ -272,18 +294,14 @@ public class Prestecs {
     
                         if ((today.isEqual(dataPrestec) || today.isAfter(dataPrestec)) && today.isBefore(dataDevolucio)) {
                             prestecsActius = true;
-                            System.out.println("ID Préstec: " + prestec.getInt("id"));
-                            System.out.println("ID Usuari: " + prestec.getInt("idUsuari"));
-                            System.out.println("ID Llibre: " + prestec.getInt("idLlibre"));
-                            System.out.println("Data Préstec: " + prestec.getString("dataPrestec"));
-                            System.out.println("Data Devolució: " + prestec.getString("dataDevolucio"));
-                            System.out.println("");
+                            mostrarInformacio(prestec);
+
                         }
                     } else {
-                        System.err.println("Préstec con formato incorrecto en el índice: " + i);
+                        System.err.println("Préstec amb format incorrecte: " + i);
                     }
                 } catch (Exception e) {
-                    System.err.println("Error procesando préstec en el índice " + i + ": " + e.getMessage());
+                    System.err.println("Error" + i + ": " + e.getMessage());
                 }
             }
     
@@ -312,12 +330,8 @@ public class Prestecs {
     
                         if (today.isAfter(dataDevolucio)) {
                             prestecsFora = true;
-                            System.out.println("ID Préstec: " + prestec.getInt("id"));
-                            System.out.println("ID Usuari: " + prestec.getInt("idUsuari"));
-                            System.out.println("ID Llibre: " + prestec.getInt("idLlibre"));
-                            System.out.println("Data Préstec: " + prestec.getString("dataPrestec"));
-                            System.out.println("Data Devolució: " + prestec.getString("dataDevolucio"));
-                            System.out.println("");
+                            mostrarInformacio(prestec);
+
                         }
                     } else {
                         System.err.println("Préstec con formato incorrecto en el índice: " + i);
