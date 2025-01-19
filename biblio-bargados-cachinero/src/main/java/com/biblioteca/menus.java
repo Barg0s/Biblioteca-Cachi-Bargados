@@ -364,7 +364,7 @@ public class menus {
                 case "tornar":
                     return;
                 default:
-                    System.out.println("Opció no vàlida. Torna a intentar-ho.");
+                    System.out.println("Opció no vàlida.Torna a intentar-ho.");
                     break;
             }
         }

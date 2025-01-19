@@ -18,10 +18,7 @@
         "titol": "Divergente",
         "id": 4,
         "autors": [
-            "manolito",
-            "pepito",
-            "aaa",
-            "bbb"
+            "Veronica Roth"
         ]
     },
     {
@@ -33,13 +30,5 @@
         "titol": "La cura mortal",
         "id": 6,
         "autors": ["James Dashner"]
-    },
-    {
-        "titol": "aa",
-        "id": 7,
-        "autors": [
-            "aa",
-            "bb"
-        ]
     }
 ]

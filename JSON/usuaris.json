@@ -1,7 +1,7 @@
 [
     {
         "telefon": 658011562,
-        "prestecsActius": 3,
+        "prestecsActius": 4,
         "id": 1,
         "nom": "David",
         "cognom": "Bargados"
@@ -19,5 +19,12 @@
         "id": 3,
         "nom": "Albert",
         "cognom": "Palacios"
+    },
+    {
+        "telefon": 616444444,
+        "prestecsActius": 1,
+        "id": 4,
+        "nom": "nou",
+        "cognom": "nouez"
     }
 ]

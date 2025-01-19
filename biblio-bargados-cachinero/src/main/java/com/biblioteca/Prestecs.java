@@ -207,6 +207,10 @@ public class Prestecs {
      * @param nouValor El nou valor per la data de devolució.
      */
     public static void modificarPrestecs(int id, String clau, String nouValor) {
+
+        if (nouValor.isEmpty()){
+            System.err.println("Error: El valor no pot estar buit");
+        }
         try {
             String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
             JSONArray prestecsArray = new JSONArray(contentPrestecs);

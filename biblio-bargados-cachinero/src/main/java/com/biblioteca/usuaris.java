@@ -22,13 +22,18 @@ public class usuaris {
      * @param usuari JSONobject que representa un usuari.
      */
     public static void mostrarInformacio(JSONObject usuari){
-        System.out.println("··········Informació de l'usuari··········");
-        System.out.println("ID: " + usuari.getInt("id"));
-        System.out.println("Nom: " + usuari.getString("nom"));
-        System.out.println("Cognom: " + usuari.getString("cognom"));
-        System.out.println("Telefon: " + usuari.getInt("telefon"));
-        System.out.println("··········································");  
-        System.out.println();
+        try {
+            System.out.println("··········Informació de l'usuari··········");
+            System.out.println("ID: " + usuari.getInt("id"));
+            System.out.println("Nom: " + usuari.getString("nom"));
+            System.out.println("Cognom: " + usuari.getString("cognom"));
+            System.out.println("Telefon: " + usuari.getInt("telefon"));
+            System.out.println("··········································");  
+            System.out.println();            
+        } catch (Exception e) {
+            System.err.println("Usuari no trobat");
+        }
+
     }
 
     /**
@@ -42,7 +47,7 @@ public class usuaris {
             out.write(jsonArray.toString(4));
             out.flush();
         } catch (Exception e) {
-            System.out.println("No s'ha pogut desar el fitxer: " + e.getMessage());
+            System.err.println("No s'ha pogut desar el fitxer: " + e.getMessage());
         }
     }
 
@@ -92,7 +97,10 @@ public class usuaris {
      * @param cognom El cognom del nou usuari.
      * @param telefon El número de telèfon del nou usuari.
      */
-    public static void afegirUsuaris(String nom, String cognom, int telefon) {
+    public static void afegirUsuaris(String nom, String cognom, Integer telefon) {
+        if (nom.isEmpty() || cognom.isEmpty() || telefon == null) {
+            System.out.println("No hi poden existir valors buits.");
+            return;}
         try {
             String content = new String(Files.readAllBytes(Paths.get(filepath)));
             JSONArray jsonArray = new JSONArray(content);
@@ -206,7 +214,7 @@ public class usuaris {
                         System.out.println("Acció cancel·lada.");
                         return;
                     } else {
-                        System.out.println("Resposta no vàlida. Acció cancel·lada.");
+                        System.out.println("Resposta no vàlida");
                         return;
                     }
                 }
