@@ -88,8 +88,17 @@ public class menus {
                 break;
                 case "3":
                 case "eliminar":
-                    System.out.println("Funció per eliminar llibres encara no implementada.");
-                    break;
+                System.out.print("Escriu l'ID del llibre a modificar: ");
+                if (scanner.hasNextInt()) {
+                    int id = scanner.nextInt();                   
+                    Llibres.eliminarLlibres(id);
+                    }
+                
+                 else {
+                    System.out.println("Entrada no vàlida. L'ID ha de ser numèric.");
+                    scanner.nextLine();
+                }
+                break;
                 case "4":
                 case "llistar":
                     menuLlistarllibres(scanner);
@@ -298,7 +307,7 @@ public class menus {
             System.out.println("1. Tots");
             System.out.println("2. En préstec actiu");
             System.out.println("3. Prestec fora de termini");
-            System.out.println("0. Tornar al menú de llibres");
+            System.out.println("0. Tornar al menú d'usuaris");
             System.out.print("Escull una opció: ");
 
             String option = scanner.nextLine().toLowerCase();

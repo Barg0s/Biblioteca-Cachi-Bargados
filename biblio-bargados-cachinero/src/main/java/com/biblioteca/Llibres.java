@@ -30,7 +30,22 @@ public class Llibres {
             e.printStackTrace();
         }
     }
+      /**
+     * Mètode per guardar el contingut d'un JSONArray en un arxiu JSON.
+     *
+     * @param filepath  Ruta de l'arxiu JSON
+     */
+    public static JSONArray llegirJSON(String filepath){
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            JSONArray jsonArray = new JSONArray(content);
+            return jsonArray; 
+        } catch (Exception e) {
+            System.err.println("No existeix");
+            return new JSONArray();
+        }
 
+    } 
     /**
      * Mètode per mostrar la informació d'un llibre.
      *
@@ -106,8 +121,7 @@ public class Llibres {
             return;
         }
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
             comprovarLlibre(titol, jsonArray); 
             JSONObject Llibre = new JSONObject();
             int id = 1;
@@ -232,8 +246,7 @@ public class Llibres {
             return;
         }    
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
 
             JSONObject llibre = buscarLlibrePerId(jsonArray, id);
             if (llibre == null) {
@@ -272,8 +285,7 @@ public class Llibres {
     public static void eliminarLlibres(int id) {
         Scanner scanner = new Scanner(System.in);
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
             
             boolean existeix = false;
 
@@ -312,8 +324,7 @@ public class Llibres {
      */
     public static void LlistarLlibres() {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
 
             // Mostrem la informació de tots els llibres
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -332,8 +343,7 @@ public class Llibres {
      */
     public static void LlistarPerTitol(String titolFiltar) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
             boolean titolTrobat = false; 
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -361,8 +371,7 @@ public class Llibres {
      */
     public static void LlistarPerAutor(String autorFiltrat) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = llegirJSON(filepath);
             boolean autorTrobat = false; 
 
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -392,36 +401,60 @@ public class Llibres {
      */
     public static void LlistarLlibresPrestec() {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray llibresArray = new JSONArray(content);
-
-            String prestecsContent = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(prestecsContent);
-
-            String usuarisContent = new String(Files.readAllBytes(Paths.get(filepathUsers)));
-            JSONArray usuarisArray = new JSONArray(usuarisContent);
-
+            JSONArray llibresArray = llegirJSON(filepath);
+    
+            JSONArray prestecsArray = llegirJSON(filepathPrestecs);
+    
+            JSONArray usuarisArray = llegirJSON(filepathUsers);
+    
             for (int p = 0; p < prestecsArray.length(); p++) {
-                JSONObject prestat = prestecsArray.getJSONObject(p);
-                int id_llibre = prestat.getInt("idLlibre");
-                String idUsuari = prestat.getString("idUsuari");
-
-                for (int i = 0; i < llibresArray.length(); i++) {
-                    JSONObject llibre = llibresArray.getJSONObject(i);
-                    if (id_llibre == llibre.getInt("id")) {
-                        for (int j = 0; j < usuarisArray.length(); j++) {
-                            JSONObject usuari = usuarisArray.getJSONObject(j);
-                            if (idUsuari.equals(usuari.getString("id"))) {
-                                System.out.println("Llibre: " + llibre.getString("titol"));
-                                System.out.println("Usuari: " + usuari.getString("nom"));
-                                break;
-                            }
-                        }
+                JSONObject prestec = prestecsArray.getJSONObject(p);
+                int idLlibrePrestec = prestec.getInt("idLlibre");
+                int idUsuari = prestec.getInt("idUsuari");
+    
+                JSONObject llibre = null;
+                for (int l = 0; l < llibresArray.length(); l++) {
+                    JSONObject tempLlibre = llibresArray.getJSONObject(l);
+                    if (tempLlibre.getInt("id") == idLlibrePrestec) {
+                        llibre = tempLlibre;
+                        break;
                     }
+                }
+    
+                JSONObject usuari = null;
+                for (int u = 0; u < usuarisArray.length(); u++) {
+                    JSONObject tempUsuari = usuarisArray.getJSONObject(u);
+                    if (tempUsuari.getInt("id") == idUsuari) {
+                        usuari = tempUsuari;
+                        break;
+                    }
+                }
+    
+                if (llibre != null && usuari != null) {
+                    String titol = llibre.getString("titol");
+                    JSONArray autorsArray = llibre.getJSONArray("autors");
+                    ArrayList<String> autors = new ArrayList<>();
+                    for (int a = 0; a < autorsArray.length(); a++) {
+                        autors.add(autorsArray.getString(a));
+                    }
+    
+                    String nom = usuari.getString("nom");
+                    String cognom = usuari.getString("cognom");
+    
+                    String dataPrestec = prestec.getString("dataPrestec");
+                    String dataDevolucio = prestec.getString("dataDevolucio");
+    
+                    System.out.println("·······Informació del llibre prestat·······");
+                    System.out.println("Propietari: " + nom + " " + cognom);
+                    System.out.println("Títol: " + titol);
+                    System.out.println("Autors: " + String.join(", ", autors));
+                    System.out.println("Data de préstec: " + dataPrestec);
+                    System.out.println("Data de devolució: " + dataDevolucio);
+                    System.out.println("···································");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-}
+}    

@@ -22,9 +22,9 @@
     },
     {
         "telefon": 616444444,
-        "prestecsActius": 1,
+        "prestecsActius": 0,
         "id": 4,
-        "nom": "nou",
-        "cognom": "nouez"
+        "nom": "usuari",
+        "cognom": "nou"
     }
 ]

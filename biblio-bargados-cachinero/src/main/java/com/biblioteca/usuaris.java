@@ -102,8 +102,7 @@ public class usuaris {
             System.out.println("No hi poden existir valors buits.");
             return;}
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = Llibres.llegirJSON(filepath);
     
             comprobarTelefon(telefon, jsonArray);
     
@@ -189,8 +188,7 @@ public class usuaris {
     public static void eliminarUsuaris(int id) {
         Scanner scanner = new Scanner(System.in);
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = Llibres.llegirJSON(filepath);
             
             boolean existeix = false;
     
@@ -233,8 +231,7 @@ public class usuaris {
      */
     public static void LlistarUsuaris(){
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = Llibres.llegirJSON(filepath);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject usuari = jsonArray.getJSONObject(i);
                 mostrarInformacio(usuari);
@@ -249,11 +246,9 @@ public class usuaris {
      */
     public static void LlistarUsuarisActiu() {
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
     
-            String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray usuarisArray = new JSONArray(contentUsuaris);
+            JSONArray usuarisArray = Llibres.llegirJSON(filepath);
     
             LocalDate today = LocalDate.now();
             boolean usuarisActiusTrobats = false;
@@ -287,8 +282,6 @@ public class usuaris {
             if (!usuarisActiusTrobats) {
                 System.out.println("No n'hi ha usuaris amb préstecs actius.");
             }
-        } catch (IOException e) {
-            System.err.println("Error al llegir els fitxers: " + e.getMessage());
         } catch (JSONException e) {
             System.err.println("Error al processar el JSON: " + e.getMessage());
         } catch (Exception e) {
@@ -301,11 +294,9 @@ public class usuaris {
      */
     public static void LlistarUsuarisForaTermini() {
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
     
-            String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepath)));
-            JSONArray usuarisArray = new JSONArray(contentUsuaris);
+            JSONArray usuarisArray = Llibres.llegirJSON(filepath);
     
             LocalDate today = LocalDate.now();
             System.out.println("Usuaris amb préstecs fora de termini:");
@@ -345,8 +336,6 @@ public class usuaris {
             if (!hasForaTermini) {
                 System.out.println("No n'hi ha usuaris amb préstecs fora de termini.");
             }
-        } catch (IOException e) {
-            System.err.println("Error al llegir els fitxers: " + e.getMessage());
         } catch (JSONException e) {
             System.err.println("Error en el format JSON: " + e.getMessage());
         }

@@ -127,14 +127,11 @@ public class Prestecs {
      */
     public static void afegirPrestec(String titol, String nom, String cognom) {
         try {
-            String contentLlibres = new String(Files.readAllBytes(Paths.get(filepathLlibres)));
-            JSONArray llibresArray = new JSONArray(contentLlibres);
+            JSONArray llibresArray = Llibres.llegirJSON(filepathLlibres);
 
-            String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepathUsers)));
-            JSONArray usuarisArray = new JSONArray(contentUsuaris);
+            JSONArray usuarisArray = Llibres.llegirJSON(filepathUsers);
 
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
 
             JSONObject llibre = buscarLlibrePerNom(llibresArray, titol);
             JSONObject usuari = buscarUsuariPerNom(usuarisArray, nom, cognom);
@@ -212,8 +209,7 @@ public class Prestecs {
             System.err.println("Error: El valor no pot estar buit");
         }
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
 
             JSONObject prestecFiltrar = buscarPrestecPerID(prestecsArray, id);
             if (prestecFiltrar == null) {
@@ -233,8 +229,7 @@ public class Prestecs {
             System.out.println("Préstec actualitzat correctament.");
         } catch (IllegalArgumentException e) {
             System.out.println("Error de validació: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Error al accedir als fitxers: " + e.getMessage());
+
         } catch (Exception e) {
             System.out.println("Error inesperat: " + e.getMessage());
         }
@@ -249,8 +244,7 @@ public class Prestecs {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
 
             boolean existeix = false;
 
@@ -269,8 +263,7 @@ public class Prestecs {
                         prestecsArray.remove(i);
                         guardarJSON(prestecsArray, filepathPrestecs);
 
-                        String contentUsuaris = new String(Files.readAllBytes(Paths.get(filepathUsers)));
-                        JSONArray usuarisArray = new JSONArray(contentUsuaris);
+                        JSONArray usuarisArray = Llibres.llegirJSON(filepathUsers);
 
                         for (int j = 0; j < usuarisArray.length(); j++) {
                             JSONObject usuari = usuarisArray.getJSONObject(j);
@@ -304,8 +297,7 @@ public class Prestecs {
      */
     public static void llistarPrestec() {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = Llibres.llegirJSON(filepathPrestecs);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject prestec = jsonArray.getJSONObject(i);
 
@@ -323,8 +315,7 @@ public class Prestecs {
      */
     public static void llistarPrestecUsuari(int id) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray jsonArray = new JSONArray(content);
+            JSONArray jsonArray = Llibres.llegirJSON(filepathPrestecs);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject prestec = jsonArray.getJSONObject(i);
 
@@ -343,8 +334,7 @@ public class Prestecs {
      */
     public static void LlistarPrestecActius() {
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
             LocalDate today = LocalDate.now();
 
             boolean prestecsActius = false;
@@ -383,8 +373,7 @@ public class Prestecs {
      */
     public static void LlistarPrestecForaTermini() {
         try {
-            String contentPrestecs = new String(Files.readAllBytes(Paths.get(filepathPrestecs)));
-            JSONArray prestecsArray = new JSONArray(contentPrestecs);
+            JSONArray prestecsArray = Llibres.llegirJSON(filepathPrestecs);
             LocalDate today = LocalDate.now();
 
             boolean prestecsFora = false;
